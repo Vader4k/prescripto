@@ -1,27 +1,28 @@
 import { doctors } from "../assets/assets_frontend/assets"
-console.log(doctors)
+import { useNavigate } from "react-router-dom"
 
 const TopDoctors: React.FC = () => {
+    const navigate = useNavigate()
   return (
-    <section className="flex flex-col items-center gap-5 text-gray-800 px-6 md:px-10">
+    <section className="flex flex-col items-center gap-5 px-6 text-gray-800 md:px-10">
         <h1>Top Doctors</h1>
         <p>Simply browse through our extensive list of trusted doctors.</p>
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 pt-5 gap-y-6 px-3 sm:px-0">
+        <div className="grid w-full gap-4 px-3 pt-5 grid-cols-auto gap-y-6 sm:px-0">
             {doctors.slice(0,10).map((doctor) => (
-                <div className="border border-blue-200 rounded-xl overflow-clip cursor-pointer hover:translate-y-[-10px] transition-all duration-300" key={doctor._id}>
+                <button onClick={() => navigate(`/book-appointment/${doctor._id}`)} className="border border-blue-200 rounded-xl overflow-clip cursor-pointer hover:translate-y-[-10px] transition-all duration-300" key={doctor._id}>
                     <img className="bg-blue-50" src={doctor.image} alt={doctor.name} />
                     <div className="p-4">
                         <div className="flex items-center gap-2 text-sm text-center text-green-500">
-                            <div className="w-2 h-2 rounded-full bg-green-500" />
+                            <div className="w-2 h-2 bg-green-500 rounded-full" />
                             <p>Available</p>
                         </div>
-                        <p>{doctor.name}</p>
-                        <p>{doctor.speciality}</p>
+                        <p className="text-lg font-medium text-gray-900">{doctor.name}</p>
+                        <p className="text-sm text-gray-500">{doctor.speciality}</p>
                     </div>
-                </div>
+                </button>
             ))}
         </div>
-        <button>More</button>
+        <button className="px-12 py-3 mt-10 text-gray-600 rounded-full bg-blue-50">More</button>
     </section>
   )
 }

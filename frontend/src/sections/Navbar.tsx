@@ -21,8 +21,8 @@ const Navbar = () => {
   });
 
   return (
-    <header className="border-b border-gray-200 p-3">
-      <div className="flex justify-between items-center px-4 md:px-6 lg:px-20">
+    <header className="p-3 border-b border-gray-200">
+      <div className="flex justify-between items-center px-4 md:px-6 lg:px-20 max-w-[1440px] mx-auto">
         <Link to="/">
           <img className="w-44" src={assets.logo} alt="Company logo" />
         </Link>
@@ -52,7 +52,7 @@ const Navbar = () => {
             <div className="relative" ref={dropdownRef}>
               <button
                 onClick={() => setShowMenu((prev) => !prev)}
-                className="flex items-center gap-4 cursor-pointer group w-full"
+                className="flex items-center w-full gap-4 cursor-pointer group"
               >
                 <img
                   className="w-8 rounded-full"
