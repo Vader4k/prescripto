@@ -1,7 +1,7 @@
 import { assets } from "../assets/assets_frontend/assets";
 import { useNavigate } from "react-router-dom";
 
-const Banner = () => {
+const Banner:React .FC = () => {
   const navigate = useNavigate();
   return (
     <section className="flex items-center justify-between gap-5 px-6 text-gray-800 md:px-24 bg-primary h-[350px] rounded-lg">
