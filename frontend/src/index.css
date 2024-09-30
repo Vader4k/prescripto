@@ -9,11 +9,9 @@
   font-style: normal;
 }
 
-body {
-  font-family: "helvetica", sans-serif;
-  scroll-behavior: smooth;
+*,body{
+  font-family: 'General Sans', sans-serif;
 }
-
 ::-webkit-scrollbar {
   display: none;
   

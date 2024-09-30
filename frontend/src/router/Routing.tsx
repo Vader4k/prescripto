@@ -8,10 +8,13 @@ import Profile from "../pages/Profile";
 import MyAppointment from "../pages/MyAppointment";
 import Error from "../pages/Error";
 import BookAppointment from "../pages/BookAppointment";
+import ScrollToTop from "../components/ScrollToTop";
 
 const Routing = () => {
   return (
-    <Routes>
+    <>
+      <ScrollToTop />
+      <Routes>
       <Route path="/" element={<Home />} />
       <Route path="/doctors" element={<Doctors />} />
       <Route path="/doctors/:speciality" element={<Doctors />} />
@@ -22,7 +25,8 @@ const Routing = () => {
       <Route path="/my-appointments" element={<MyAppointment />} />
       <Route path="/book-appointment/:id" element={<BookAppointment />} />
       <Route path="*" element={<Error />} />
-    </Routes>
+      </Routes>
+    </>
   );
 };
 export default Routing;

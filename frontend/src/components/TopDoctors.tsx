@@ -1,7 +1,9 @@
-import { doctors } from "../assets/assets_frontend/assets"
+
 import { useNavigate } from "react-router-dom"
+import { useUserContext } from "../hooks/useUserContext"
 
 const TopDoctors: React.FC = () => {
+    const {doctors} = useUserContext()
     const navigate = useNavigate()
   return (
     <section className="flex flex-col items-center gap-5 px-6 text-gray-800 md:px-10">
@@ -22,7 +24,7 @@ const TopDoctors: React.FC = () => {
                 </button>
             ))}
         </div>
-        <button className="px-12 py-3 mt-10 text-gray-600 rounded-full bg-blue-50">More</button>
+        <button onClick={() => navigate('/doctors')} className="px-12 py-3 mt-10 text-gray-600 rounded-full bg-blue-50">More</button>
     </section>
   )
 }
