@@ -1,0 +1,36 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@font-face {
+  font-family: "helvetica";
+  src: url("../assets/fonts/Helvetica.ttf") format(".ttf");
+  font-weight: 400;
+  font-style: normal;
+}
+
+body {
+  font-family: "helvetica", sans-serif;
+  scroll-behavior: smooth;
+}
+
+::-webkit-scrollbar {
+  display: none;
+  
+}
+
+@layer base {
+  main {
+    @apply px-4 py-8 md:px-6 lg:px-20 md:py-10 ;
+  }
+  h1 {
+    @apply text-2xl;
+  }
+}
+
+@layer components {
+  .nav__btn {
+    @apply bg-primary text-secondary px-6 py-4 rounded-[50px] text-sm;
+  }
+}
+
