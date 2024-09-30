@@ -17,8 +17,6 @@ const Doctors = () => {
     [doctors, speciality]
   );
 
-  console.log(filteredDoctors);
-
   return (
     <section className="p-4">
       <div className="w-full max-w-[1400px] mx-auto flex items-start gap-10">

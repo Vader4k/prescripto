@@ -2,6 +2,7 @@ import { useParams } from "react-router-dom";
 import { useUserContext } from "../hooks/useUserContext";
 import { useMemo, useState } from "react";
 import { assets } from "../assets/assets_frontend/assets";
+import RelatedDoctors from '../components/RelatedDoctors';
 
 interface IDoctorInformation {
   _id: string;
@@ -123,6 +124,9 @@ const BookAppointment: React.FC = () => {
             </button>
           </div>
         </div>
+      </div>
+      <div>
+        <RelatedDoctors id={docInfo._id} speciality={docInfo.speciality}/>
       </div>
     </section>
   );
