@@ -105,12 +105,22 @@ const Auth: React.FC = () => {
           {formType === "register" ? (
             <span className="mt-2 text-sm text-center">
               Already have an account?{" "}
-              <button className="underline text-primary" onClick={() => setFormType("login")}>Login here</button>
+              <button
+                className="underline text-primary"
+                onClick={() => setFormType("login")}
+              >
+                Login here
+              </button>
             </span>
           ) : (
             <span className="text-sm text-center ">
               Don't have an account?{" "}
-              <button className="underline text-primary" onClick={() => setFormType("register")}>register</button>
+              <button
+                className="underline text-primary"
+                onClick={() => setFormType("register")}
+              >
+                register
+              </button>
             </span>
           )}
         </form>
