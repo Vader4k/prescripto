@@ -28,7 +28,7 @@ const RelatedDoctors = ({ speciality, id }: IRelatedDoctors) => {
           </p>
           <div>
             <ul className="grid w-full gap-4 px-3 pt-5 mt-10 grid-cols-auto gap-y-6 sm:px-0">
-              {relatedDoctors.map(({ _id, name, speciality, image }) => (
+              {relatedDoctors.slice(0,5).map(({ _id, name, speciality, image }) => (
                 <DoctorCard key={_id} {...{ _id, name, speciality, image }} />
               ))}
             </ul>
