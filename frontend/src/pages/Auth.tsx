@@ -1,27 +1,29 @@
-import { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { RegistrationSchema, LoginSchema } from "../utils/Validator";
+import { z } from "zod";
 
-interface FormData {
-  fullname?: string;
-  email: string;
-  password: string;
-}
+type FormData = z.infer<typeof RegistrationSchema>;
 
 const Auth: React.FC = () => {
-  const [formType, setFormType] = useState<string>("register");
+  const [formType, setFormType] = useState<"register" | "login">("register");
 
-  // choose the appropriate schema based on form type
   const schema = formType === "register" ? RegistrationSchema : LoginSchema;
 
   const {
     register,
     handleSubmit,
     formState: { errors },
+    reset,
   } = useForm<FormData>({
     resolver: zodResolver(schema),
   });
+
+  useEffect(() => {
+    // Reset form when switching between register and login
+    reset();
+  }, [formType, reset]);
 
   const onSubmit = (data: FormData) => {
     if (formType === "register") {
@@ -29,6 +31,7 @@ const Auth: React.FC = () => {
     } else {
       console.log("login form data", data);
     }
+    // Here you would typically make an API call to register or login the user
   };
 
   return (
@@ -44,6 +47,7 @@ const Auth: React.FC = () => {
         <form
           className="flex flex-col items-start gap-3"
           onSubmit={handleSubmit(onSubmit)}
+          noValidate
         >
           {formType === "register" && (
             <div className="flex flex-col w-full gap-3">
@@ -52,14 +56,13 @@ const Auth: React.FC = () => {
               </label>
               <input
                 className="p-2 border outline-none"
-                placeholder=""
+                placeholder="John Doe"
                 type="text"
                 id="fullname"
-                required
                 {...register("fullname")}
               />
               {errors.fullname && (
-                <p className="text-sm text-red-500">
+                <p className="text-sm text-red-500" role="alert">
                   {errors.fullname.message}
                 </p>
               )}
@@ -71,14 +74,15 @@ const Auth: React.FC = () => {
             </label>
             <input
               className="p-2 border outline-none"
-              placeholder="...@gmail.com"
+              placeholder="you@example.com"
               type="email"
               id="email"
-              required
               {...register("email")}
             />
-            {errors.fullname && (
-              <p className="text-sm text-red-500">{errors.email?.message}</p>
+            {errors.email && (
+              <p className="text-sm text-red-500" role="alert">
+                {errors.email.message}
+              </p>
             )}
           </div>
           <div className="flex flex-col w-full gap-3">
@@ -89,11 +93,12 @@ const Auth: React.FC = () => {
               className="p-2 border outline-none"
               type="password"
               id="password"
-              required
               {...register("password")}
             />
             {errors.password && (
-              <p className="text-sm text-red-500">{errors.password.message}</p>
+              <p className="text-sm text-red-500" role="alert">
+                {errors.password.message}
+              </p>
             )}
           </div>
           <button
@@ -108,6 +113,7 @@ const Auth: React.FC = () => {
               <button
                 className="underline text-primary"
                 onClick={() => setFormType("login")}
+                type="button"
               >
                 Login here
               </button>
@@ -118,8 +124,9 @@ const Auth: React.FC = () => {
               <button
                 className="underline text-primary"
                 onClick={() => setFormType("register")}
+                type="button"
               >
-                register
+                Register
               </button>
             </span>
           )}
