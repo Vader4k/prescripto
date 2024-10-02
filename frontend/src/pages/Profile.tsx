@@ -17,7 +17,7 @@ interface IFormData {
 }
 
 const Profile: React.FC = () => {
-  const [isEdit, setIsEdit] = useState<boolean>(true);
+  const [isEdit, setIsEdit] = useState<boolean>(false);
 
   const [userData, setUserData] = useState<IFormData>({
     fullname: "Edward Vincent",
