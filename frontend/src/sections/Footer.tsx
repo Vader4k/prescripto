@@ -4,7 +4,7 @@ const Footer = () => {
   return (
     <footer className="mt-20">
       <div className="w-full max-w-[1400px] mx-auto p-4 md:px-10">
-        <div className="flex items-start justify-between w-full">
+        <div className="flex flex-col items-start justify-between w-full gap-6 md:flex-row">
           <div className="flex flex-col gap-6 ">
             <img className="w-[180px]" src={assets.logo} alt="logo" />
             <p className="text-sm max-w-[600px] leading-7">

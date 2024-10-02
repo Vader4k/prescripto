@@ -1,21 +1,22 @@
 import { assets } from "../assets/assets_frontend/assets";
 import { NavLink, Link, useNavigate } from "react-router-dom";
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import NavDropDown from "../components/NavDropDown";
 import useClickOutside from "../hooks/useClickOutside";
 
-const navLinks = [
-  { name: "Home", path: "/" },
-  { name: "Doctors", path: "/doctors" },
-  { name: "About", path: "/about" },
-  { name: "Contact", path: "/contact" },
-];
-
 const Navbar: React.FC = () => {
+
+  const navLinks = useMemo(() => [
+    { name: "Home", path: "/" },
+    { name: "Doctors", path: "/doctors" },
+    { name: "About", path: "/about" },
+    { name: "Contact", path: "/contact" },
+  ], []);
+  
   const navigate = useNavigate();
   const [showMenu, setShowMenu] = useState<boolean>(false);
   const [showNav, setShowNav] = useState<boolean>(false);
-  const [token, setToken] = useState(true);
+  const [isAuthenticated, setIsAuthenticated] = useState<boolean>(true);
 
   const dropdownRef = useClickOutside(() => {
     setShowMenu(false);
@@ -49,7 +50,7 @@ const Navbar: React.FC = () => {
           </ul>
         </nav>
         <div className="relative flex items-center gap-2">
-          {token ? (
+          {isAuthenticated ? (
             <div className="relative" ref={dropdownRef}>
               <button
                 onClick={() => setShowMenu((prev) => !prev)}
@@ -67,7 +68,10 @@ const Navbar: React.FC = () => {
                 />
               </button>
               {showMenu && (
-                <NavDropDown setShowMenu={setShowMenu} setToken={setToken} />
+                <NavDropDown
+                  setShowMenu={setShowMenu}
+                  setToken={setIsAuthenticated}
+                />
               )}
             </div>
           ) : (
@@ -79,24 +83,26 @@ const Navbar: React.FC = () => {
               Create account
             </button>
           )}
-          <img
+          <button
             onClick={() => setShowNav(true)}
             className="w-6 h-6 md:hidden"
-            src={assets.menu_icon}
-            alt="menu"
-          />
-          <div className={`fixed z-[20] md:hidden inset-0 bg-white transition-all duration-500 ease-in-out ${
-            showNav ? 'opacity-100 visible w-screen' : 'opacity-0 invisible'
-          }`}>
+            aria-label="Open menu"
+          >
+            <img src={assets.menu_icon} alt="menu" />
+          </button>
+          <div
+            className={`fixed z-[20] md:hidden inset-0 bg-white transition-all duration-500 ease-in-out ${
+              showNav ? "opacity-100 visible w-screen" : "opacity-0 invisible"
+            }`}
+          >
             <div className="flex items-center justify-between p-4">
               <img className="w-36" src={assets.logo} alt="logo" />
-              <button 
-              onClick={() => setShowNav(false)}>
-              <img
-                src={assets.cross_icon}
-                className="w-7 h-7"
-                alt="close_icon"
-              />
+              <button onClick={() => setShowNav(false)}>
+                <img
+                  src={assets.cross_icon}
+                  className="w-7 h-7"
+                  alt="close_icon"
+                />
               </button>
             </div>
             <ul className="flex flex-col gap-3 p-4">
@@ -107,7 +113,7 @@ const Navbar: React.FC = () => {
                     onClick={() => setShowNav(false)}
                     className={({ isActive }) => `
                       block py-2 px-2 transition-colors duration-300 text-2xl font-medium
-                      ${isActive ? 'text-primary' : 'text-black'}
+                      ${isActive ? "text-primary" : "text-black"}
                     `}
                   >
                     {link.name}

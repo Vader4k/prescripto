@@ -5,7 +5,7 @@ const Banner:React .FC = () => {
   const navigate = useNavigate();
   return (
     <section className="flex items-center justify-between gap-5 px-6 text-gray-800 md:px-24 bg-primary h-[350px] rounded-lg">
-      <div className="w-1/2">
+      <div className="flex flex-col items-center w-full text-center md:block md:w-1/2 md:items-start ">
         <h1 className="text-xl sm:text-2xl md:text-3xl lg:text-4xl font-bold lg:leading-[4rem] text-white">
           Book Appointment <br /> With 100+ Trusted Doctors
         </h1>
