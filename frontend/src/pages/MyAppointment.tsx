@@ -8,7 +8,7 @@ const MyAppointment = () => {
       <h2 className="pb-3 mt-12 font-medium border-b text-zinc-700">My Appointments</h2>
       <div>
         {doctors.slice(0, 3).map((item) => (
-          <div className="flex items-end justify-between py-2 border-b" key={item._id}>
+          <div className="flex flex-col justify-between gap-3 py-2 border-b md:flex-row md:items-end" key={item._id}>
             <div className="flex items-start gap-6">
               <img className="w-32 bg-indigo-50" src={item.image} alt={item.name + "image"} />
               <div>
