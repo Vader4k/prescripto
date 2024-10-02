@@ -11,6 +11,7 @@
 
 *,body{
   font-family: 'General Sans', sans-serif;
+  overflow-x:hidden
 }
 ::-webkit-scrollbar {
   display: none;

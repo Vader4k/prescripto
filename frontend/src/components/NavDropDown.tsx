@@ -32,12 +32,12 @@ const NavDropDown = ({ setShowMenu, setToken }: INavdropDown) => {
   };
 
   return (
-    <div className="absolute top-12 left-0 w-48 p-4 bg-white rounded-lg shadow-lg">
+    <div className="absolute top-12 -left-36 w-48 p-4 bg-white rounded-lg shadow-lg z-[20] border">
       {navOptions.map((option) => (
         <button
           onClick={() => handleClick(option.path)}
           key={option.name}
-          className="block p-2 hover:bg-gray-100 rounded-md w-full"
+          className="block w-full p-2 rounded-md hover:bg-gray-100"
         >
           {option.name}
         </button>

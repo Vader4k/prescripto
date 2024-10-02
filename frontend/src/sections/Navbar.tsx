@@ -11,9 +11,10 @@ const navLinks = [
   { name: "Contact", path: "/contact" },
 ];
 
-const Navbar = () => {
+const Navbar: React.FC = () => {
   const navigate = useNavigate();
-  const [showMenu, setShowMenu] = useState(false);
+  const [showMenu, setShowMenu] = useState<boolean>(false);
+  const [showNav, setShowNav] = useState<boolean>(false);
   const [token, setToken] = useState(true);
 
   const dropdownRef = useClickOutside(() => {
@@ -24,9 +25,9 @@ const Navbar = () => {
     <header className="p-3 border-b border-gray-200">
       <div className="flex justify-between items-center px-4 md:px-6 lg:px-20 max-w-[1440px] mx-auto">
         <Link to="/">
-          <img className="w-44" src={assets.logo} alt="Company logo" />
+          <img className="w-32 md:w-44" src={assets.logo} alt="Company logo" />
         </Link>
-        <nav>
+        <nav className="hidden md:block">
           <ul className="flex gap-10">
             {navLinks.map((link) => (
               <li key={link.name}>
@@ -47,7 +48,7 @@ const Navbar = () => {
             ))}
           </ul>
         </nav>
-        <div>
+        <div className="relative flex items-center gap-2">
           {token ? (
             <div className="relative" ref={dropdownRef}>
               <button
@@ -65,7 +66,9 @@ const Navbar = () => {
                   alt="Arrow down"
                 />
               </button>
-              {showMenu && <NavDropDown setShowMenu={setShowMenu} setToken={setToken}/>}
+              {showMenu && (
+                <NavDropDown setShowMenu={setShowMenu} setToken={setToken} />
+              )}
             </div>
           ) : (
             <button
@@ -76,6 +79,43 @@ const Navbar = () => {
               Create account
             </button>
           )}
+          <img
+            onClick={() => setShowNav(true)}
+            className="w-6 h-6 md:hidden"
+            src={assets.menu_icon}
+            alt="menu"
+          />
+          <div className={`fixed z-[20] md:hidden inset-0 bg-white transition-all duration-500 ease-in-out ${
+            showNav ? 'opacity-100 visible w-screen' : 'opacity-0 invisible'
+          }`}>
+            <div className="flex items-center justify-between p-4">
+              <img className="w-36" src={assets.logo} alt="logo" />
+              <button 
+              onClick={() => setShowNav(false)}>
+              <img
+                src={assets.cross_icon}
+                className="w-7 h-7"
+                alt="close_icon"
+              />
+              </button>
+            </div>
+            <ul className="flex flex-col gap-3 p-4">
+              {navLinks.map((link) => (
+                <li key={link.name}>
+                  <NavLink
+                    to={link.path}
+                    onClick={() => setShowNav(false)}
+                    className={({ isActive }) => `
+                      block py-2 px-2 transition-colors duration-300 text-2xl font-medium
+                      ${isActive ? 'text-primary' : 'text-black'}
+                    `}
+                  >
+                    {link.name}
+                  </NavLink>
+                </li>
+              ))}
+            </ul>
+          </div>
         </div>
       </div>
     </header>
