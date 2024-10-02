@@ -3,14 +3,14 @@ import { Link } from "react-router-dom";
 
 const SpecialityMenu = () => {
   return (
-    <section id="speciality" className="py-8">
-      <div className="container mx-auto flex flex-col items-center justify-center gap-5">
+    <section id="speciality">
+      <div className="container flex flex-col items-center justify-center gap-5 mx-auto">
         <h1>Find by Speciality</h1>
         <p className="max-w-[500px] text-center text-gray-600">
           Simply browse through our extensive list of trusted doctors and
           schedule an appointment hassle-free.
         </p>
-        <div className="flex gap-4 sm:justify-center pt-5 w-full overflow-x-auto">
+        <div className="flex w-full gap-4 pt-5 overflow-x-auto sm:justify-center">
           {Object.entries(specialityData).map(([key, value]) => (
             <Link
               onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
@@ -20,7 +20,7 @@ const SpecialityMenu = () => {
             >
               <div>
                 <img
-                  className="w-16 sm:w-24 mb-2"
+                  className="w-16 mb-2 sm:w-24"
                   src={value.image}
                   alt={`${value.speciality} icon`}
                 />
