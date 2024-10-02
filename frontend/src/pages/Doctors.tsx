@@ -46,8 +46,19 @@ const Doctors: React.FC = () => {
               ))}
             </div>
           )}
+          <div className="flex-col hidden gap-3 sm:flex ">
+              {specialityData.map((link) => (
+                <button
+                  className="w-full p-3 text-sm transition-colors border rounded-xl hover:bg-gray-100"
+                  onClick={() => navigate(`/doctors/${link.speciality}`)}
+                  key={link.speciality}
+                >
+                  {link.speciality}
+                </button>
+              ))}
+            </div>
         </div>
-        <div className="md:w-[80%]">
+        <div className="w-full md:w-[80%]">
           {filteredDoctors.length > 0 ? (
             <div>
               <h2 className="mb-4 text-xl font-semibold">
