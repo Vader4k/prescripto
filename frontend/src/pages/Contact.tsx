@@ -1,11 +1,17 @@
-import { assets } from "../assets/assets_frontend/assets"
+import { assets } from "../assets/assets_frontend/assets";
 
 const Contact = () => {
   return (
     <section>
-      <h1 className="text-center uppercase">Contact <span className="font-bold">Us</span></h1>
-      <div className="flex items-center justify-center gap-6 py-10">
-        <img className="w-full max-w-[400px] h-[400px]" src={assets.contact_image} alt="contact page image" />
+      <h1 className="text-center uppercase">
+        Contact <span className="font-bold">Us</span>
+      </h1>
+      <div className="flex flex-wrap items-center justify-center gap-6 py-10">
+        <img
+          className="w-full max-w-[400px] h-[400px]"
+          src={assets.contact_image}
+          alt="contact page image"
+        />
         <div className="flex flex-col items-start h-full gap-4">
           <h2 className="font-bold text-gray-600">OUR OFFICE</h2>
           <p className="text-sm">54709 Willms Station</p>
@@ -18,7 +24,7 @@ const Contact = () => {
         </div>
       </div>
     </section>
-  )
-}
+  );
+};
 
-export default Contact
+export default Contact;

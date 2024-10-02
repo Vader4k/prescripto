@@ -6,7 +6,7 @@ const About = () => {
       <h1 className="text-center">
         ABOUT <span className="font-bold">US</span>
       </h1>
-      <div className="flex items-start gap-10 py-10">
+      <div className="flex flex-col items-center gap-10 py-10 md:items-start md:flex-row">
         <img className="w-full max-w-[360px]" src={assets.about_image} alt="about_section_image" />
         <div className="flex flex-col gap-6">
           <p>
@@ -28,16 +28,16 @@ const About = () => {
       </div>
       <div className="my-10">
         <h1>WHY <span className="font-bold">CHOOSE US</span></h1>
-        <div className="flex items-start justify-between my-10">
-          <div className="w-1/3 p-20 border max-h-[250px]">
+        <div className="flex flex-col items-start justify-between my-10 md:flex-row">
+          <div className="md:w-1/3 p-10 lg:p-20 border max-h-[250px] min-h-[230px] hover:bg-primary hover:text-white transition-all">
             <h2 className="text-xl font-medium uppercase">Effifiency:</h2>
             <p className="mt-5 text-sm leading-6">Streamlined Appointment scheduling that fits into your busy lifestyle</p>
           </div>
-          <div className="w-1/3 p-20 border max-h-[250px]">
+          <div className="md:w-1/3 p-10 lg:p-20 border max-h-[250px] min-h-[230px] hover:bg-primary hover:text-white transition-all">
             <h2 className="text-xl font-medium uppercase">Convenience:</h2>
             <p className="mt-5 text-sm leading-6">Access to a network of trusted healthcare professionals in your area.</p>
           </div>
-          <div className="w-1/3 p-20 border max-h-[250px]">
+          <div className="md:w-1/3 p-10 lg:p-20 border max-h-[250px] min-h-[230px] hover:bg-primary hover:text-white transition-all">
             <h2 className="text-xl font-medium uppercase">personalization:</h2>
             <p className="mt-5 text-sm">Tailored recommendations and reminders to help you stay on top of your health</p>
           </div>

@@ -1,13 +1,14 @@
 import { useParams, useNavigate } from "react-router-dom";
 import { useUserContext } from "../hooks/useUserContext";
 import { specialityData } from "../assets/assets_frontend/assets";
-import { useMemo } from "react";
+import { useMemo, useState } from "react";
 import DoctorCard from "../components/DoctorCard";
 
-const Doctors = () => {
+const Doctors: React.FC = () => {
   const { speciality } = useParams();
   const { doctors } = useUserContext();
   const navigate = useNavigate();
+  const [showFilter, setShowFilter] = useState<boolean>(false);
 
   const filteredDoctors = useMemo(
     () =>
@@ -18,23 +19,35 @@ const Doctors = () => {
   );
 
   return (
-    <section className="p-4">
-      <div className="w-full max-w-[1400px] mx-auto flex items-start gap-10">
-        <div className="w-[20%]">
-          <h1 className="mb-4 text-sm font-medium text-gray-800">Browse Doctors by Specialty</h1>
-          <div className="flex flex-col gap-3">
-            {specialityData.map((link) => (
-              <button
-                className="w-full p-3 text-sm transition-colors border rounded-xl hover:bg-gray-100"
-                onClick={() => navigate(`/doctors/${link.speciality}`)}
-                key={link.speciality}
-              >
-                {link.speciality}
-              </button>
-            ))}
-          </div>
+    <section>
+      <div className="w-full max-w-[1400px] mx-auto flex flex-col md:flex-row items-start gap-10">
+        <div className="md:w-[20%] w-full">
+          <h1 className="mb-4 text-sm font-medium text-gray-800">
+            Browse through the doctors specialist.
+          </h1>
+          <button
+            onClick={() => setShowFilter((prev) => !prev)}
+            className={`py-1 px-3 border rounded text-sm mb-5 transition-all sm:hidden ${
+              showFilter ? "bg-primary text-white" : ""
+            }`}
+          >
+            Filter
+          </button>
+          {showFilter && (
+            <div className="flex flex-col gap-3">
+              {specialityData.map((link) => (
+                <button
+                  className="w-full p-3 text-sm transition-colors border rounded-xl hover:bg-gray-100"
+                  onClick={() => navigate(`/doctors/${link.speciality}`)}
+                  key={link.speciality}
+                >
+                  {link.speciality}
+                </button>
+              ))}
+            </div>
+          )}
         </div>
-        <div className="w-[80%]">
+        <div className="md:w-[80%]">
           {filteredDoctors.length > 0 ? (
             <div>
               <h2 className="mb-4 text-xl font-semibold">

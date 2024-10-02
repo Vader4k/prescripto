@@ -7,7 +7,7 @@ const Footer = () => {
         <div className="flex flex-col items-start justify-between w-full gap-6 md:flex-row">
           <div className="flex flex-col gap-6 ">
             <img className="w-[180px]" src={assets.logo} alt="logo" />
-            <p className="text-sm max-w-[600px] leading-7">
+            <p className="text-sm max-w-[400px] lg:max-w-[600px] leading-7">
               Lorem ipsum dolor, sit amet consectetur adipisicing elit. Modi
               fuga culpa quasi sunt soluta molestiae cum officia neque debitis
               labore voluptatum at quae, aspernatur id fugit suscipit delectus

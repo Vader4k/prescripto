@@ -3,8 +3,8 @@ import { assets } from "../assets/assets_frontend/assets";
 const Hero: React.FC = () => {
   return (
     <section className=" h-[70vh] sm:h-[80vh] bg-primary relative rounded-lg flex w-full gap-8">
-      <div className="flex flex-col items-start gap-5 p-10 sm:gap-3 lg:p-20 xl:p-40">
-        <h1 className="text-3xl lg:text-4xl xl:text-5xl font-semibold text-white max-w-[500px] md:leading-[4rem]">
+      <div className="flex flex-col items-start gap-5 px-5 py-14 sm:p-10 sm:gap-3 lg:p-20 xl:p-40">
+        <h1 className="text-2xl lg:text-4xl xl:text-5xl font-semibold text-white max-w-[500px] md:leading-[4rem]">
           Book Appointment With Trusted Doctors
         </h1>
         <img src={assets.group_profiles} alt="" />
