@@ -2,6 +2,13 @@ import Doctor from "../models/doctorModel.js";
 import bcryptjs from "bcryptjs";
 import validator from "validator";
 import { v2 as cloudinary } from "cloudinary";
+import jwt from "jsonwebtoken";
+import dotenv from "dotenv";
+
+dotenv.config();
+
+const adminEmail = process.env.ADMIN_EMAIL;
+const adminPassword = process.env.ADMIN_PASSWORD;
 
 //api for adding a new doctor
 export const addDoctor = async (req, res) => {
@@ -32,22 +39,24 @@ export const addDoctor = async (req, res) => {
     if (!image) missingFields.push("image");
 
     if (missingFields.length > 0) {
-      return res
-        .status(400)
-        .json({ message: `Missing fields: ${missingFields.join(", ")}` });
+      return res.status(400).json({
+        success: false,
+        message: `Missing fields: ${missingFields.join(", ")}`,
+      });
     }
 
     //validate email
     if (!validator.isEmail(email)) {
-      return res.status(400).json({ message: "Invalid email" });
+      return res.status(400).json({ success: false, message: "Invalid email" });
     }
 
     // check if doctor already exists
     let user = await Doctor.findOne({ email });
     if (user) {
-      return res
-        .status(400)
-        .json({ message: "Doctor already exists with this email" });
+      return res.status(400).json({
+        success: false,
+        message: "Doctor already exists with this email",
+      });
     }
     const hashedPassword = await bcryptjs.hash(password, 10);
 
@@ -67,10 +76,39 @@ export const addDoctor = async (req, res) => {
       fees,
       address: JSON.parse(address),
     });
-    res.status(201).json({ message: "Doctor added successfully", doctor });
+    res.status(201).json({
+      success: true,
+      message: "Doctor added successfully",
+      doctor,
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: "Failed to add doctor",
+      error: error.message,
+    });
+  }
+};
+
+//api for login
+export const loginAdmin = async (req, res) => {
+  try {
+    const { email, password } = req.body;
+    if (email === adminEmail && password === adminPassword) {
+      const token = jwt.sign({ email, role: 'admin' }, process.env.JWT_SECRET, { expiresIn: '1h' });
+      res.status(200).json({ success: true, token });
+    } else {
+      res
+        .status(400)
+        .json({ success: false, message: "Invalid email or password" });
+    }
   } catch (error) {
     res
       .status(500)
-      .json({ message: "Failed to add doctor", error: error.message });
+      .json({
+        success: false,
+        message: "Failed to login",
+        error: error.message,
+      });
   }
 };
