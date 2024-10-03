@@ -52,7 +52,7 @@ const Profile: React.FC = () => {
   };
 
   return (
-    <div className="flex flex-col max-w-lg gap-2 text-sm">
+    <div className="flex flex-col gap-2 max-w-lg text-sm">
       <img
         className="rounded-lg max-w-36"
         src={userData.image}
@@ -184,20 +184,20 @@ const Profile: React.FC = () => {
         <div className="mt-10">
           {isEdit ? (
             <button
-              className="px-8 py-3 transition-all border rounded-full border-primary hover:bg-primary hover:text-white"
+              className="px-8 py-3 rounded-full border transition-all border-primary hover:bg-primary hover:text-white"
               type="submit" // This is fine for the Save button
             >
               Save information
             </button>
           ) : (
-            <div
-              className="px-8 py-3 transition-all border rounded-full w-fit border-primary hover:bg-primary hover:text-white"
+            <button
+              className="px-8 py-3 rounded-full border transition-all w-fit border-primary hover:bg-primary hover:text-white"
               onClick={() => {
                 setIsEdit(true);
               }}
             >
               Edit
-            </div>
+            </button>
           )}
         </div>
       </form>
