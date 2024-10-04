@@ -1,8 +1,10 @@
+import Login from './pages/Login'
 
-
-const App = () => {
+const App:React.FC = () => {
   return (
-    <div className='text-red-500'>App</div>
+    <div>
+      <Login />
+    </div>
   )
 }
 
