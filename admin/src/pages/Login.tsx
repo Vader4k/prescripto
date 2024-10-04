@@ -2,34 +2,58 @@ import { useState } from "react";
 import { z } from "zod";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { loginSchema } from "../validators/formValidtor";
+import { useAdminContext } from "../hooks/useAllContext";
+import axios from "axios";
+import { toast } from "react-toastify";
 
 const Login: React.FC = () => {
-  const schema = z.object({
-    email: z.string().email("Invalid email address"),
-    password: z.string(),
-  });
-
   const [state, setState] = useState("Admin");
+  const { setAToken, baseUrl } = useAdminContext();
 
   const {
     register,
     handleSubmit,
     formState: { errors },
-  } = useForm<z.infer<typeof schema>>({
-    resolver: zodResolver(schema),
+  } = useForm<z.infer<typeof loginSchema>>({
+    resolver: zodResolver(loginSchema),
     defaultValues: {
       email: "",
       password: "",
     },
   });
 
-  const onSubmit = (data: z.infer<typeof schema>) => {
-    console.log(data);
+  const onSubmit = async (data: z.infer<typeof loginSchema>) => {
+    try {
+        if(state === "Admin") {
+            const response = await axios.post(`${baseUrl}/api/admin/login`, data);
+            if(response.status === 200) {
+                setAToken(response.data.token);
+                localStorage.setItem("aToken", response.data.token);
+            } else {
+                toast.error(response.data.message);
+            }
+        } else {
+            const response = await axios.post(`${baseUrl}/doctor/login`, data);
+            if(response.status === 200) {
+                setAToken(response.data.token); 
+                localStorage.setItem("dToken", response.data.token);
+            } else {
+                toast.error(response.data.message);
+            }
+        }
+    } catch (error) {
+      if (axios.isAxiosError(error)) {
+        toast.error(error.response?.data.message);
+      } else {
+        toast.error('An unexpected error occurred');
+      }
+    }
   };
 
   return (
     <form
-      className="flex flex-col items-center justify-center h-screen"
+      className="flex flex-col items-center justify-center h-screen p-5"
       onSubmit={handleSubmit(onSubmit)}
     >
       <div className="flex flex-col items-center justify-center gap-4 m-auto min-w-[340px] w-full max-w-[500px] border rounded-lg p-8 text-[#5E5E5E] text-sm shadow-lg">
@@ -51,7 +75,9 @@ const Login: React.FC = () => {
             required
             {...register("email")}
           />
-          {errors.email && <p>{errors.email.message}</p>}
+          {errors.email && (
+            <p className="my-2 text-sm text-red-500">{errors.email.message}</p>
+          )}
         </div>
         <div className="flex flex-col w-full gap-2">
           <label
@@ -67,7 +93,11 @@ const Login: React.FC = () => {
             required
             {...register("password")}
           />
-          {errors.password && <p>{errors.password.message}</p>}
+          {errors.password && (
+            <p className="my-2 text-sm text-red-500">
+              {errors.password.message}
+            </p>
+          )}
         </div>
         <button
           className="w-full p-2 text-white transition-all duration-300 rounded-lg bg-primary hover:bg-primary/90"
