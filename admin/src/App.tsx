@@ -1,9 +1,10 @@
 import Login from './pages/Login'
-import { ToastContainer, toast } from 'react-toastify'
+import { ToastContainer } from 'react-toastify'
 import 'react-toastify/dist/ReactToastify.css'
 import { useAdminContext } from './hooks/useAllContext';
 import Navbar from './components/Navbar';
 import Sidebar from './components/Sidebar';
+import Routing from './routes/Routing';
 
 const App:React.FC = () => {
 
@@ -25,6 +26,7 @@ const App:React.FC = () => {
       <Navbar />
       <div className='flex items-start gap-20 py-6 bg-[#F8F9FD]'>
         <Sidebar />
+        <Routing />
       </div>
     </>
   )
