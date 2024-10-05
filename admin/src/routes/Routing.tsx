@@ -8,8 +8,9 @@ const Routing:React.FC = () => {
   return (
     <div>
       <Routes>
-        <Route path="/" element={<Dashboard />} />
-        <Route path="/doctors-list" element={<DoctorsList />} />
+        <Route path="/" element={<></>} />
+        <Route path="/admin-dashboard" element={<Dashboard />} />
+        <Route path="/doctor-list" element={<DoctorsList />} />
         <Route path="/all-appointments" element={<AllAppointment />} />
         <Route path="/add-doctor" element={<AddDoctor />} />
       </Routes>
