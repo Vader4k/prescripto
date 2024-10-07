@@ -24,9 +24,11 @@ const App:React.FC = () => {
     <>
       <ToastContainer />
       <Navbar />
-      <div className='flex items-start gap-20 py-6 bg-[#F8F9FD]'>
+      <div className='flex items-start gap-5 bg-[#F8F9FD]'>
         <Sidebar />
-        <Routing />
+        <div className='w-full'>
+          <Routing />
+        </div>
       </div>
     </>
   )

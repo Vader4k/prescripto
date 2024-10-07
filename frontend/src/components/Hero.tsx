@@ -4,9 +4,9 @@ const Hero: React.FC = () => {
   return (
     <section className=" h-[70vh] sm:h-[70vh] bg-primary relative rounded-lg flex w-full gap-8">
       <div className="flex flex-col items-start gap-5 px-5 py-14 sm:p-10 md:py-20 sm:gap-3 lg:p-20 xl:px-22 xl:py-60">
-        <h1 className="text-2xl font-bold text-white md:text-3xl lg:text-4xl xl:text-5xl max-w-[500px] lg:max-w-[550px]">
+        <h2 className="text-2xl font-bold text-white md:text-3xl lg:text-4xl xl:text-5xl max-w-[500px] lg:max-w-[550px]">
           Book Appointment With Trusted Doctors
-        </h1>
+        </h2>
         <div className="flex items-center gap-3">
         <img src={assets.group_profiles} alt="" />
         <p className="text-white max-w-[350px] hidden text-sm sm:block ">Simply browse through our extensive list of trusted doctors and schedule an appointment hassle-free.</p>
