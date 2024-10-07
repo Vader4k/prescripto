@@ -1,138 +1,163 @@
 import { assets } from "../../assets/assets";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { addDoctorSchema } from "../../validators/formValidtor";
+import FileInput from "../../components/FileInput";
+import { TextInput } from "../../components/TextInput";
+import SelectInput from "../../components/SelectInput";
+import TextArea from "../../components/TextArea";
+
+export interface IDoctorSchema {
+  name: string;
+  email: string;
+  password: string;
+  experience: string;
+  fees: number;
+  speciality: string;
+  education: string;
+  address: {
+    addressLine1: string;
+    addressLine2: string;
+  };
+  about: string;
+  image: string;
+}
 
 const AddDoctor: React.FC = () => {
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm<IDoctorSchema>({
+    resolver: zodResolver(addDoctorSchema),
+  });
+
+  const onSubmit = (data: IDoctorSchema) => {
+    console.log(data);
+  };
+
   return (
-    <form className="w-full">
+    <form onSubmit={handleSubmit(onSubmit)} className="w-full">
       <div className="w-full m-5">
         <p className="mb-3 text-lg font-medium">Add Doctor</p>
 
         <div className="w-full max-w-4xl px-8 py-8 bg-white border rounded max-h-[80vh] h-full overflow-y-scroll">
-          <div className="flex items-center gap-3 mb-8 text-gray-800 ">
-            <label htmlFor="doc-image">
-              <img
-                className="w-16 bg-gray-100 rounded-full cursor-pointer"
-                src={assets.upload_area}
-                alt="upload_area"
-              />
-            </label>
-            <input type="file" id="doc-image" hidden />
-            <p>
-              Upload Doctor <br /> Image
-            </p>
-          </div>
+          <FileInput
+            label="Upload Doctor Image"
+            id="doc-image"
+            register={register}
+            errors={errors.image}
+            img={assets.upload_area}
+          />
           <div className="flex flex-col items-start gap-10 text-gray-600 lg:flex-row">
             <div className="flex flex-col flex-1 gap-5">
-              <div className="flex flex-col gap-2 text-sm">
-                <label htmlFor="doc-name">Doctor Name</label>
-                <input className="w-full p-2 border outline-none" type="text" id="doc-name" required placeholder="Name" />
-              </div>
-              <div className="flex flex-col gap-2 text-sm">
-                <label htmlFor="doc-email">Doctor Email</label>
-                <input
-                  className="w-full p-2 border outline-none"
-                  type="email"
-                  id="doc-email"
-                  required
-                  placeholder="Email"
-                />
-              </div>
-              <div className="flex flex-col gap-2 text-sm">
-                <label htmlFor="doc-password">Doctor Password</label>
-                <input
-                  className="w-full p-2 border outline-none"
-                  type="password"
-                  id="doc-password"
-                  required
-                  placeholder="Password"
-                />
-              </div>
-              <div className="flex flex-col gap-2 text-sm">
-                <label htmlFor="doc-experience">Doctor Experience</label>
-                <select
-                  defaultValue="1 year"
-                  name="doc-experience"
-                  id="doc-experience"
-                  required
-                  className="w-full max-w-[100px] p-2 border outline-none"
-                >
-                  <option value="1 year">1 year</option>
-                  <option value="2 year">2 year</option>
-                  <option value="3 year">3 year</option>
-                  <option value="4 year">4 year</option>
-                  <option value="5 year">5 year</option>
-                  <option value="6 year">6 year</option>
-                  <option value="7 year">7 year</option>
-                </select>
-              </div>
-              <div className="flex flex-col gap-2 text-sm">
-                <label htmlFor="doc-fees">Doctor Fees</label>
-                <input
-                  type="number"
-                  id="doc-fees"
-                  required
-                  placeholder="Fees"
-                  className="w-full max-w-[100px] p-2 border outline-none"
-                />
-              </div>
+              <TextInput
+                label="Doctor Name"
+                id="name"
+                placeholder="Name"
+                register={register}
+                errors={errors.name}
+                type="text"
+              />
+              <TextInput
+                label="Doctor Email"
+                id="email"
+                placeholder="Email"
+                register={register}
+                errors={errors.email}
+                type="email"
+              />
+              <TextInput
+                label="Doctor Password"
+                id="password"
+                type="password"
+                placeholder="Password"
+                register={register}
+                errors={errors.password}
+              />
+              <SelectInput
+                label="Doctor Experience"
+                id="experience"
+                register={register}
+                defaultValue="1 year"
+                options={[
+                  { value: "1 year", label: "1 year" },
+                  { value: "2 year", label: "2 year" },
+                  { value: "3 year", label: "3 year" },
+                  { value: "4 year", label: "4 year" },
+                  { value: "5 year", label: "5 year" },
+                  { value: "6 year", label: "6 year" },
+                  { value: "7 year", label: "7 year" },
+                  // Add more options here
+                ]}
+                errors={errors.experience}
+              />
+              <TextInput
+                label="Doctor Fees"
+                id="fees"
+                type="string"
+                placeholder="Fees"
+                register={register}
+                errors={errors.fees}
+              />
             </div>
             <div className="flex flex-col flex-1 gap-5">
-              <div className="flex flex-col gap-2 text-sm">
-                <label htmlFor="doc-speciality">Speciality</label>
-                <select
-                  className="w-full p-2 border outline-none"
-                  defaultValue="general physician"
-                  name="doc-experience"
-                  id="doc-experience"
-                  required
-                >
-                  <option value="general physician">General Physician</option>
-                  <option value="gynecologist">Gynecologist</option>
-                  <option value="pediatrician">Pediatrician</option>
-                  <option value="dermatologist">Dermatologist</option>
-                  <option value="gastroenterologist">Gastroenterologist</option>
-                  <option value="neurologist">Neurologist</option>
-                </select>
-              </div>
-              <div className="flex flex-col gap-2 text-sm">
-                <label htmlFor="doc-education">Doctor Education</label>
-                <input
-                  type="text"
-                  id="doc-education"
-                  required
-                  placeholder="Education"
-                  className="w-full p-2 border outline-none"
-                />
-              </div>
-              <div className="flex flex-col gap-2 text-sm">
-                <label htmlFor="doc-address">Address</label>
-                <input
-                  type="text"
-                  id="doc-address"
-                  required
-                  placeholder="Address 1"
-                  className="w-full p-2 border outline-none"
-                /> 
-                <input
-                  type="text"
-                  id="doc-address"
-                  required
-                  placeholder="Address 2"
-                  className="w-full p-2 border outline-none"
-                />
-              </div>
+              <SelectInput
+                label="Speciality"
+                id="speciality"
+                register={register}
+                defaultValue="general physician"
+                options={[
+                  { value: "general physician", label: "General Physician" },
+                  { value: "gynecologist", label: "Gynecologist" },
+                  { value: "pediatrician", label: "Pediatrician" },
+                  { value: "dermatologist", label: "Dermatologist" },
+                  { value: "cardiologist", label: "Cardiologist" },
+                  { value: "neurologist", label: "Neurologist" },
+                  { value: "urologist", label: "Urologist" },
+                  { value: "ophthalmologist", label: "Ophthalmologist" },
+                  { value: "psychiatrist", label: "Psychiatrist" },
+                ]}
+                errors={errors.speciality}
+              />
+              <TextInput
+                label="Doctor Education"
+                id="education"
+                placeholder="Education"
+                register={register}
+                errors={errors.education}
+              />
+              <TextInput
+                label="Address Line 1"
+                id="address.addressLine1"
+                placeholder="Address 1"
+                register={register}
+                errors={errors.address?.addressLine1}
+              />
+              <TextInput
+                label="Address Line 2"
+                id="address.addressLine2"
+                placeholder="Address 2"
+                register={register}
+                errors={errors.address?.addressLine2}
+              />
             </div>
           </div>
-          <div className="flex flex-col gap-2 my-5 text-sm">
-            <label htmlFor="doc-about">About Doctor</label>
-            <textarea
-              id="doc-about"
-              rows={5}
-              required
-              placeholder="Write About Doctor"
-              className="w-full p-4 border outline-none"
-            />
-          </div>
-          <button className="px-10 py-3 mt-4 text-white rounded-full bg-primary">Add Doctor</button>
+
+          <TextArea
+            label="About Doctor"
+            id="about"
+            placeholder="Write about the doctor"
+            register={register}
+            errors={errors.about}
+          />
+
+          <button
+            type="submit"
+            className="px-10 py-3 mt-4 text-white rounded-full bg-primary"
+          >
+            Add Doctor
+          </button>
         </div>
       </div>
     </form>
