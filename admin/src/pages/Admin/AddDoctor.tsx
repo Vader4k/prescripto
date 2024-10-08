@@ -103,7 +103,7 @@ const AddDoctor: React.FC = () => {
             errors={errors.image}
             img={assets.upload_area}
           />
-          <div className="flex flex-col items-start gap-10 text-gray-600 lg:flex-row">
+          <div className="flex flex-col items-start gap-10 mb-5 text-gray-600 lg:flex-row">
             <div className="flex flex-col flex-1 gap-5">
               <TextInput
                 label="Doctor Name"
@@ -136,12 +136,12 @@ const AddDoctor: React.FC = () => {
                 defaultValue="1 year"
                 options={[
                   { value: "1 year", label: "1 year" },
-                  { value: "2 year", label: "2 year" },
-                  { value: "3 year", label: "3 year" },
-                  { value: "4 year", label: "4 year" },
-                  { value: "5 year", label: "5 year" },
-                  { value: "6 year", label: "6 year" },
-                  { value: "7 year", label: "7 year" },
+                  { value: "2 years", label: "2 years" },
+                  { value: "3 years", label: "3 years" },
+                  { value: "4 years", label: "4 years" },
+                  { value: "5 years", label: "5 years" },
+                  { value: "6 years", label: "6 years" },
+                  { value: "7 years", label: "7 years" },
                   // Add more options here
                 ]}
                 errors={errors.experience}
