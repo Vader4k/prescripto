@@ -19,6 +19,9 @@ export const TextInput: React.FC<ITextInputProps> = ({
     type,
     errors,
 }) => {
+    // Determine if the input type is number
+    const isNumber = type === 'number';
+
     return (
         <div className="flex flex-col gap-2">
             <label htmlFor={id}>{label}</label>
@@ -27,8 +30,8 @@ export const TextInput: React.FC<ITextInputProps> = ({
                 id={id}
                 placeholder={placeholder}
                 required={required}
-                {...register(id)}
-                 className="w-full p-2 border outline-none"
+                {...register(id, { valueAsNumber: isNumber })}
+                className="w-full p-2 border outline-none"
             />
             {errors && <p className="text-sm text-red-500">{errors.message}</p>}
         </div>

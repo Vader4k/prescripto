@@ -1,39 +1,40 @@
 import { UseFormRegister, FieldError } from 'react-hook-form';
 import { IDoctorSchema } from '../pages/Admin/AddDoctor';
+import { useState } from 'react';
 
 interface IFileInputProps {
     label: string;
-    id: string;
+    id: "image" | "name" | "email" | "password" | "experience" | "fees" | "speciality" | "education" | "address" | "about" | "address.addressLine1" | "address.addressLine2";
     register: UseFormRegister<IDoctorSchema>;
     required?: boolean;
     errors?: FieldError | undefined;
     img: string;
 }
 
-const FileInput: React.FC<IFileInputProps> = ({ label, id, register, errors, img }) => {
+const FileInput: React.FC<IFileInputProps> = ({ label, id, register, errors, img, required }) => {
+
+    const [docImage, setDocImage] = useState<string | null>(null);
+
     return (
       <div className="flex items-center gap-3 mb-8 text-gray-800">
         <label htmlFor={id}>
           <img
             className="w-16 bg-gray-100 rounded-full cursor-pointer"
-            src={img}
+            src={docImage ? URL.createObjectURL(docImage as unknown as Blob) : img}
             alt="upload"
           />
         </label>
         <input
           type="file"
           id={id}
+          required={required}
           hidden
           accept="image/*"
-          {...register("image", {
+          {...register(id, {
             onChange: (e) => {
-              const file = e.target.files?.[0];
+              const file = e.target.files[0];
               if (file) {
-                // If you need to perform additional actions with the file,
-                // such as previewing or processing before submitting,
-                // you can handle them here.
-                // For example:
-                //setValue('image', file);
+                setDocImage(file);
               }
             },
           })}

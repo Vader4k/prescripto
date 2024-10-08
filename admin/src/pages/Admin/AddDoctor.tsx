@@ -6,6 +6,9 @@ import FileInput from "../../components/FileInput";
 import { TextInput } from "../../components/TextInput";
 import SelectInput from "../../components/SelectInput";
 import TextArea from "../../components/TextArea";
+import { useAdminContext } from "../../hooks/useAllContext";
+import { toast } from "react-toastify";
+import axios from "axios";
 
 export interface IDoctorSchema {
   name: string;
@@ -32,8 +35,25 @@ const AddDoctor: React.FC = () => {
     resolver: zodResolver(addDoctorSchema),
   });
 
-  const onSubmit = (data: IDoctorSchema) => {
-    console.log(data);
+  const baseUrl = import.meta.env.VITE_API_URL;
+  const {aToken} = useAdminContext()
+
+  const onSubmit = async(data: IDoctorSchema) => {
+    try {
+      const res = await axios.post(`${baseUrl}/api/add-doctor`, data, {
+        headers: {
+          Authorization: `Bearer ${aToken}`,
+        },
+      });
+      console.log(res.data);
+      toast.success("Doctor added successfully");
+    } catch (error) {
+      if (axios.isAxiosError(error)) {
+        toast.error(error.response?.data.message);
+      } else {
+        toast.error('An unexpected error occurred');
+      }
+    }
   };
 
   return (
@@ -44,7 +64,7 @@ const AddDoctor: React.FC = () => {
         <div className="w-full max-w-4xl px-8 py-8 bg-white border rounded max-h-[80vh] h-full overflow-y-scroll">
           <FileInput
             label="Upload Doctor Image"
-            id="doc-image"
+            id="image"
             register={register}
             errors={errors.image}
             img={assets.upload_area}
@@ -95,7 +115,7 @@ const AddDoctor: React.FC = () => {
               <TextInput
                 label="Doctor Fees"
                 id="fees"
-                type="string"
+                type="number"
                 placeholder="Fees"
                 register={register}
                 errors={errors.fees}
