@@ -23,7 +23,7 @@ const App:React.FC = () => {
     <>
       <ToastContainer />
       <Navbar />
-      <div className='flex items-start gap-5 bg-[#F8F9FD]'>
+      <div className='flex items-start gap-5 bg-[#F8F9FD] h-full'>
         <Sidebar />
         <div className='w-full'>
           <Routing />

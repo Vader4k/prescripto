@@ -27,6 +27,7 @@ export interface IDoctorSchema {
   };
   about: string;
   image: string;
+  availability: boolean
 }
 
 const AddDoctor: React.FC = () => {

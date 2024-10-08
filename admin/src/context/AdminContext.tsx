@@ -8,11 +8,13 @@ export const AdminContext = createContext<{
   setAToken: React.Dispatch<React.SetStateAction<string>>;
   baseUrl: string;
   doctors: IDoctorSchema[];
+  changeAvailability: (docId: string) => Promise<void>; // Updated type definition
 }>({
   aToken: null,
   setAToken: () => {},
   baseUrl: "",
   doctors: [],
+  changeAvailability: async () => {}
 });
 
 
@@ -50,7 +52,30 @@ export const AdminProvider = ({ children }: { children: React.ReactNode }) => {
     }
   },[aToken, fetchDoctors]) // Now fetchDoctors is stable and can be added here
 
-  const value = { aToken, setAToken, baseUrl, doctors };
+
+  const changeAvailability = async (docId:string) => {
+    try {
+      const res = await axios.post(`${baseUrl}/api/admin/change-availability`, {docId}, {
+        headers: {
+          aToken,
+        },
+      })
+      if (res.data.success) {
+        toast.success(res.data.message);
+        fetchDoctors(); // Fetch updated doctors after changing availability
+      } else {
+        toast.error(res.data.message);
+      }
+    } catch (error) {
+      if (axios.isAxiosError(error)) {
+        toast.error(error.response?.data.message);
+      } else {
+        toast.error('An unexpected error occurred');
+      }
+    }
+  }
+
+  const value = { aToken, setAToken, baseUrl, doctors, changeAvailability };
 
   return (
     <AdminContext.Provider value={value}>{children}</AdminContext.Provider>

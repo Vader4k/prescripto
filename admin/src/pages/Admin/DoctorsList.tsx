@@ -1,22 +1,26 @@
+import DoctorCard from "../../components/DoctorCard";
+import { useAdminContext } from "../../hooks/useAllContext";
 
-import { useAdminContext } from "../../hooks/useAllContext"
-
-const DoctorsList:React.FC = () => {
-
-  const {aToken, doctors} = useAdminContext()
-
-  console.log(doctors)
+const DoctorsList: React.FC = () => {
+  const { doctors } = useAdminContext();
 
   return (
-    <section>
-      <h1>All Doctors</h1>
-      <div>
+    <section className="m-5">
+      <h1 className="text-2xl font-medium">All Doctors</h1>
+      <ul className="flex flex-wrap items-start gap-6 mt-5">
         {doctors.map((doctor) => (
-          <div key={doctor._id}>hi</div>
+          <DoctorCard
+            key={doctor._id}
+            image={doctor.image}
+            _id={doctor._id}
+            name={doctor.name}
+            speciality={doctor.speciality}
+            availability={doctor.availability}
+          />
         ))}
-      </div>
+      </ul>
     </section>
-  )
-}
+  );
+};
 
-export default DoctorsList
+export default DoctorsList;
