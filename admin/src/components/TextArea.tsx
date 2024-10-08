@@ -1,9 +1,10 @@
 import { UseFormRegister, FieldError } from 'react-hook-form';
+import { IDoctorSchema } from '../pages/Admin/AddDoctor';
 
 interface ITextAreaProps {
     label: string;
-    id: string;
-    register: UseFormRegister<any>;
+    id: "email" | "image" | "password" | "name" | "experience" | "fees" | "speciality" | "education" | "address" | "about" | "address.addressLine1" | "address.addressLine2";
+    register: UseFormRegister<IDoctorSchema>;
     required?: boolean;
     errors?: FieldError | undefined;
     placeholder: string;

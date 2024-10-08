@@ -20,11 +20,28 @@ const FileInput: React.FC<IFileInputProps> = ({ label, id, register, errors, img
             alt="upload"
           />
         </label>
-        <input {...register("image")} type="file" id={id} hidden />
+        <input
+          type="file"
+          id={id}
+          hidden
+          accept="image/*"
+          {...register("image", {
+            onChange: (e) => {
+              const file = e.target.files?.[0];
+              if (file) {
+                // If you need to perform additional actions with the file,
+                // such as previewing or processing before submitting,
+                // you can handle them here.
+                // For example:
+                //setValue('image', file);
+              }
+            },
+          })}
+        />
         <p>{label}</p>
         {errors && <p className="text-sm text-red-500">{errors.message}</p>}
       </div>
     );
   };
-  
-  export default FileInput;
+
+export default FileInput;
