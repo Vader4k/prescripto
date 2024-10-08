@@ -26,6 +26,6 @@ export const addDoctorSchema = z.object({
     },
     z.instanceof(File, { message: "Image is required" })
   ),
-  education: z.string().min(1, "Education is required"),
+  degree: z.string().min(1, "Degree is required"),
 });
 

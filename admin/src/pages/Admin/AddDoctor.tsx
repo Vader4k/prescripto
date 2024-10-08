@@ -9,6 +9,8 @@ import TextArea from "../../components/TextArea";
 import { useAdminContext } from "../../hooks/useAllContext";
 import { toast } from "react-toastify";
 import axios from "axios";
+import { useState } from "react";
+import Loader from "../../components/Loader";
 
 export interface IDoctorSchema {
   name: string;
@@ -17,7 +19,7 @@ export interface IDoctorSchema {
   experience: string;
   fees: number;
   speciality: string;
-  education: string;
+  degree: string;
   address: {
     addressLine1: string;
     addressLine2: string;
@@ -31,23 +33,55 @@ const AddDoctor: React.FC = () => {
     register,
     handleSubmit,
     formState: { errors },
+    reset,
   } = useForm<IDoctorSchema>({
     resolver: zodResolver(addDoctorSchema),
   });
 
   const baseUrl = import.meta.env.VITE_API_URL;
   const {aToken} = useAdminContext()
+  const [loading, setLoading] = useState(false);
 
   const onSubmit = async(data: IDoctorSchema) => {
+    setLoading(true);
+    const formData = new FormData();
+
+    // Append all form fields to FormData
+    formData.append("name", data.name);
+    formData.append("email", data.email);
+    formData.append("password", data.password);
+    formData.append("experience", data.experience);
+    formData.append("fees", data.fees.toFixed());
+    formData.append("speciality", data.speciality);
+    formData.append("degree", data.degree);
+    formData.append("address", JSON.stringify({line1: data.address.addressLine1, line2: data.address.addressLine2}));
+    formData.append("about", data.about);
+    
+    // Append the image file
+    if (data.image) {
+      formData.append("image", data.image);
+    } else {
+      toast.error("Image is required");
+      return;
+    }
     try {
-      const res = await axios.post(`${baseUrl}/api/add-doctor`, data, {
+      const res = await axios.post(`${baseUrl}/api/admin/add-doctor`, formData, {
         headers: {
-          Authorization: `Bearer ${aToken}`,
+          // Authorization: `Bearer ${aToken}`,
+          aToken,
+          'Content-Type': 'multipart/form-data'
         },
       });
       console.log(res.data);
-      toast.success("Doctor added successfully");
+      if(res.data.success){
+        toast.success(res.data.message);
+        setLoading(false);
+        reset();
+      }else {
+        toast.error(res.data.message);
+      }
     } catch (error) {
+      setLoading(false);
       if (axios.isAxiosError(error)) {
         toast.error(error.response?.data.message);
       } else {
@@ -57,7 +91,7 @@ const AddDoctor: React.FC = () => {
   };
 
   return (
-    <form onSubmit={handleSubmit(onSubmit)} className="w-full">
+    <form onSubmit={handleSubmit(onSubmit)} className="w-full" encType="multipart/form-data">
       <div className="w-full m-5">
         <p className="mb-3 text-lg font-medium">Add Doctor</p>
 
@@ -142,10 +176,10 @@ const AddDoctor: React.FC = () => {
               />
               <TextInput
                 label="Doctor Education"
-                id="education"
+                id="degree"
                 placeholder="Education"
                 register={register}
-                errors={errors.education}
+                errors={errors.degree}
               />
               <TextInput
                 label="Address Line 1"
@@ -173,6 +207,7 @@ const AddDoctor: React.FC = () => {
           />
 
           <button
+            disabled={loading}
             type="submit"
             className="px-10 py-3 mt-4 text-white rounded-full bg-primary"
           >
@@ -180,6 +215,7 @@ const AddDoctor: React.FC = () => {
           </button>
         </div>
       </div>
+      {loading && <Loader />}
     </form>
   );
 };

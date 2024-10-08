@@ -4,7 +4,7 @@ import { useState } from 'react';
 
 interface IFileInputProps {
     label: string;
-    id: "image" | "name" | "email" | "password" | "experience" | "fees" | "speciality" | "education" | "address" | "about" | "address.addressLine1" | "address.addressLine2";
+    id: "image" | "name" | "email" | "password" | "experience" | "fees" | "speciality" | "degree" | "address" | "about" | "address.addressLine1" | "address.addressLine2";
     register: UseFormRegister<IDoctorSchema>;
     required?: boolean;
     errors?: FieldError | undefined;
