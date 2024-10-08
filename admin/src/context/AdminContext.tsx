@@ -14,10 +14,8 @@ export const AdminContext = createContext<{
   setAToken: () => {},
   baseUrl: "",
   doctors: [],
-  changeAvailability: async () => {}
+  changeAvailability: async () => {},
 });
-
-
 
 export const AdminProvider = ({ children }: { children: React.ReactNode }) => {
   const [aToken, setAToken] = useState<string>(
@@ -26,7 +24,8 @@ export const AdminProvider = ({ children }: { children: React.ReactNode }) => {
   const [doctors, setDoctors] = useState<[]>([]);
   const baseUrl = import.meta.env.VITE_API_URL;
 
-  const fetchDoctors = useCallback(async () => { // Wrapped in useCallback
+  const fetchDoctors = useCallback(async () => {
+    // Wrapped in useCallback
     try {
       const result = await axios.get(`${baseUrl}/api/admin/all-doctors`, {
         headers: {
@@ -46,20 +45,24 @@ export const AdminProvider = ({ children }: { children: React.ReactNode }) => {
     }
   }, [aToken, baseUrl]); // Added dependencies for useCallback
 
-  useEffect(()=> {
-    if(aToken){
+  useEffect(() => {
+    if (aToken) {
       fetchDoctors();
     }
-  },[aToken, fetchDoctors]) // Now fetchDoctors is stable and can be added here
+  }, [aToken, fetchDoctors]); // Now fetchDoctors is stable and can be added here
 
-
-  const changeAvailability = async (docId:string) => {
+  const changeAvailability = async (docId: string) => {
     try {
-      const res = await axios.post(`${baseUrl}/api/admin/change-availability`, {docId}, {
-        headers: {
-          aToken,
-        },
-      })
+      const res = await axios.post(
+        `${baseUrl}/api/admin/change-availability`,
+        { docId },
+        {
+          // Wrapped docId in an object
+          headers: {
+            aToken,
+          },
+        }
+      );
       if (res.data.success) {
         toast.success(res.data.message);
         fetchDoctors(); // Fetch updated doctors after changing availability
@@ -70,10 +73,10 @@ export const AdminProvider = ({ children }: { children: React.ReactNode }) => {
       if (axios.isAxiosError(error)) {
         toast.error(error.response?.data.message);
       } else {
-        toast.error('An unexpected error occurred');
+        toast.error("An unexpected error occurred");
       }
     }
-  }
+  };
 
   const value = { aToken, setAToken, baseUrl, doctors, changeAvailability };
 

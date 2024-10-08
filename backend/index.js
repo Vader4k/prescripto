@@ -5,6 +5,7 @@ import cookieParser from 'cookie-parser'
 import { connectDB } from './config/mongodb.js'
 import connectCloudinary from './config/cloudinary.js'
 import adminRouter from './routes/adminRoute.js'
+import doctorRouter from './routes/doctorRoute.js'
 // app configurations
 dotenv.config()
 const app = express()
@@ -32,3 +33,4 @@ app.listen(port, ()=> {
 // admin routes
 // localhost:5000/api/admin/
 app.use("/api/admin", adminRouter);
+app.use('/api', doctorRouter)

@@ -2,9 +2,9 @@ import Doctor from "../models/doctorModel.js";
 
 export const changeAvailability = async (req, res) => {
   try {
-    const { _id } = req.body;
+    const { docId } = req.body;
 
-    const doctor = await Doctor.findOne({ _id });
+    const doctor = await Doctor.findById(docId);
     if (!doctor)
       return res
         .status(404)
@@ -13,12 +13,28 @@ export const changeAvailability = async (req, res) => {
     await doctor.save();
     res.json({ success: true, message: "Availability changed successfully" });
   } catch (error) {
-    res
-      .status(500)
-      .json({
-        success: false,
-        message: "something went wrong",
-        error: error.message,
-      });
+    res.status(500).json({
+      success: false,
+      message: "something went wrong",
+      error: error.message,
+    });
+  }
+};
+
+export const doctorList = async (req, res) => {
+  try {
+    const doctors = await Doctor.find({}).select(["-password", "-email"]);
+    if (doctors.length <= 0) {
+      return res
+        .status(200)
+        .json({ success: false, message: "No doctor found" });
+    }
+    res.status(201).json({ success: true, doctors });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: "something went wrong",
+      error: error.message,
+    });
   }
 };
