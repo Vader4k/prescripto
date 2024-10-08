@@ -9,7 +9,6 @@ import Routing from './routes/Routing';
 const App:React.FC = () => {
 
   const { aToken } = useAdminContext();
-  console.log(aToken)
   
   if (!aToken) {
     return (

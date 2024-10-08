@@ -1,21 +1,58 @@
-import { createContext, useState } from "react";
+import { createContext, useEffect, useState, useCallback } from "react";
+import axios from "axios";
+import { toast } from "react-toastify";
+import { IDoctorSchema } from "../pages/Admin/AddDoctor";
 
 export const AdminContext = createContext<{
   aToken: string | null;
   setAToken: React.Dispatch<React.SetStateAction<string>>;
   baseUrl: string;
+  doctors: IDoctorSchema[];
 }>({
   aToken: null,
   setAToken: () => {},
   baseUrl: "",
+  doctors: [],
 });
 
+
+
 export const AdminProvider = ({ children }: { children: React.ReactNode }) => {
-  const [aToken, setAToken] = useState<string>(localStorage.getItem("aToken") || "");
+  const [aToken, setAToken] = useState<string>(
+    localStorage.getItem("aToken") || ""
+  );
+  const [doctors, setDoctors] = useState<[]>([]);
   const baseUrl = import.meta.env.VITE_API_URL;
 
-  const value = { aToken, setAToken, baseUrl };
+  const fetchDoctors = useCallback(async () => { // Wrapped in useCallback
+    try {
+      const result = await axios.get(`${baseUrl}/api/admin/all-doctors`, {
+        headers: {
+          aToken,
+        },
+      });
+      if (!result.data.success) {
+        toast.error(result.data.message);
+      }
+      setDoctors(result.data.doctors);
+    } catch (error) {
+      if (axios.isAxiosError(error)) {
+        toast.error(error.response?.data.message);
+      } else {
+        toast.error("An unexpected error occurred");
+      }
+    }
+  }, [aToken, baseUrl]); // Added dependencies for useCallback
 
-  return <AdminContext.Provider value={value}>{children}</AdminContext.Provider>;
+  useEffect(()=> {
+    if(aToken){
+      fetchDoctors();
+    }
+  },[aToken, fetchDoctors]) // Now fetchDoctors is stable and can be added here
+
+  const value = { aToken, setAToken, baseUrl, doctors };
+
+  return (
+    <AdminContext.Provider value={value}>{children}</AdminContext.Provider>
+  );
 };
-    

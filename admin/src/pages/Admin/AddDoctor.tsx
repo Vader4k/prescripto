@@ -13,6 +13,7 @@ import { useState } from "react";
 import Loader from "../../components/Loader";
 
 export interface IDoctorSchema {
+  _id: string;
   name: string;
   email: string;
   password: string;

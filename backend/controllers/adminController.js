@@ -112,3 +112,17 @@ export const loginAdmin = async (req, res) => {
       });
   }
 };
+
+
+//get all doctors
+export const getAllDoctors = async (req, res) => {
+  try {
+    const doctors = await Doctor.find({}).select('-password')
+    if(doctors.length <= 0) {
+      res.status(200).json({ success: false, message:"No doctor found" });
+    }
+    res.json({success: true, doctors})
+  } catch (error) {
+    res.status(500).json({success: false, message: "something went wrong" ,error: error.message});
+  }
+}
