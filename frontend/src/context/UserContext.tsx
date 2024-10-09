@@ -1,5 +1,5 @@
 import { createContext } from "react";
-import { useState, useCallback, useEffect } from "react";
+import { useState, useCallback, useEffect, useMemo } from "react";
 import axios from "axios";
 import { toast } from "react-toastify";
 
@@ -20,6 +20,7 @@ export interface IDoctor {
 
 interface UserContextType {
   doctors: IDoctor[];
+  memorizedDoctors: IDoctor[]; // memoized version of doctors for performance optimization
 }
 
 export const UserContext = createContext<UserContextType | null>(null);
@@ -49,9 +50,12 @@ export const UserProvider = ({ children }: { children: React.ReactNode }) => {
     getDoctors();
   }, []);
 
+  const memorizedDoctors = useMemo(() => doctors, [doctors])
+
 
   const value = { 
     doctors,
+    memorizedDoctors
    };
 
   return <UserContext.Provider value={value}>{children}</UserContext.Provider>;
