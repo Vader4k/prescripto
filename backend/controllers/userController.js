@@ -31,6 +31,9 @@ export const register = async (req, res) => {
     const newUser = new User({ email, name, password: hashedPassword });
     await newUser.save();
 
+    //fetch user id to use to get user data in frontend
+    const data = newUser._id;
+
     //generate token
     const token = jwt.sign({ email, role: "user" }, process.env.JWT_SECRET, {
       expiresIn: "1hr",
@@ -38,10 +41,58 @@ export const register = async (req, res) => {
     res.status(201).json({
       success: true,
       message: "Registration successfull.",
-      token
+      token,
+      data,
     });
   } catch (error) {
     console.log(error);
-    res.status(500).json({ error: error.message });
+    res.status(500).json({
+      success: false,
+      message: "something went wrong",
+      error: error.message,
+    });
+  }
+};
+
+export const login = async (req, res) => {
+  try {
+    const { email, password } = req.body;
+
+    const existingUser = await User.findOne({ email });
+
+    if (!existingUser) {
+      return res
+        .status(400)
+        .json({ success: false, message: "User not found" }); // Added return
+    }
+
+    const checkedPassword = await bcryptjs.compare(
+      password,
+      existingUser.password
+    );
+
+    if (!checkedPassword) {
+      return res
+        .status(400)
+        .json({ success: false, message: "password don't match" }); // Added return
+    }
+
+    //fetch user id to use to get user data in frontend
+    const data = existingUser._id; // Changed from newUser to existingUser
+
+    const token = jwt.sign({ email, role: "user" }, process.env.JWT_SECRET, {
+      expiresIn: "1hr",
+    });
+
+    res
+      .status(200)
+      .json({ success: true, message: "login successful", token, data });
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({
+      success: false,
+      message: "something went wrong",
+      error: error.message,
+    });
   }
 };

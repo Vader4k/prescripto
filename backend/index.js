@@ -34,5 +34,5 @@ app.listen(port, ()=> {
 // admin routes
 // localhost:5000/api/admin/
 app.use("/api/admin", adminRouter);
-app.use('/api', doctorRouter)
-app.use('/api', userRouter)
+app.use('/api/doctor', doctorRouter)
+app.use('/api/user', userRouter)
