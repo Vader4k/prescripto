@@ -35,7 +35,7 @@ export const register = async (req, res) => {
     const data = newUser._id;
 
     //generate token
-    const token = jwt.sign({ email, role: "user" }, process.env.JWT_SECRET, {
+    const token = jwt.sign({ role: "user", data }, process.env.JWT_SECRET, {
       expiresIn: "1hr",
     });
     res.status(201).json({
@@ -80,13 +80,37 @@ export const login = async (req, res) => {
     //fetch user id to use to get user data in frontend
     const data = existingUser._id; // Changed from newUser to existingUser
 
-    const token = jwt.sign({ email, role: "user" }, process.env.JWT_SECRET, {
-      expiresIn: "1hr",
-    });
+    const token = jwt.sign(
+      { role: "user", data },
+      process.env.JWT_SECRET,
+      {
+        expiresIn: "1hr",
+      }
+    );
 
-    res
-      .status(200)
-      .json({ success: true, message: "login successful", token, data });
+    res.status(200).json({ success: true, message: "login successful", token });
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({
+      success: false,
+      message: "something went wrong",
+      error: error.message,
+    });
+  }
+};
+
+export const getProfile = async (req, res) => {
+  try {
+    const { id } = req.user;
+    const userData = await User.findById(id).select("-password");
+
+    if (!userData) {
+      return res
+        .status(400)
+        .json({ success: false, message: "user doesn't exist" });
+    }
+
+    res.status(201).json({ success: true, data: userData });
   } catch (error) {
     console.log(error);
     res.status(500).json({

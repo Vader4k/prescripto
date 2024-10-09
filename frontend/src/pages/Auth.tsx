@@ -6,6 +6,7 @@ import { z } from "zod";
 import { useUserContext } from "../hooks/useUserContext";
 import axios from "axios";
 import { toast } from "react-toastify";
+import { useNavigate } from "react-router-dom";
 
 type FormData = z.infer<typeof RegistrationSchema>;
 
@@ -14,8 +15,9 @@ const Auth: React.FC = () => {
 
   const schema = formType === "register" ? RegistrationSchema : LoginSchema;
 
-  const { baseUrl,setToken } = useUserContext();
-
+  const { baseUrl, setToken, token } = useUserContext();
+  const nagivate = useNavigate()
+  
   const {
     register,
     handleSubmit,
@@ -72,6 +74,12 @@ const Auth: React.FC = () => {
     }
     // Here you would typically make an API call to register or login the user
   };
+
+  useEffect(()=> {
+    if(token){
+      nagivate('/')
+    }
+  },[token, nagivate])
 
   return (
     <section>
