@@ -5,7 +5,7 @@ import { IDoctorSchema } from "../pages/Admin/AddDoctor";
 
 export const AdminContext = createContext<{
   aToken: string | null;
-  setAToken: React.Dispatch<React.SetStateAction<string>>;
+  setAToken: (token: string) => void; // Updated type for setAToken
   baseUrl: string;
   doctors: IDoctorSchema[];
   changeAvailability: (docId: string) => Promise<void>; // Updated type definition

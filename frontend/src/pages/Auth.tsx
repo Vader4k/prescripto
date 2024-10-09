@@ -1,8 +1,11 @@
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { RegistrationSchema, LoginSchema } from "../utils/Validator";
 import { z } from "zod";
+import { useUserContext } from "../hooks/useUserContext";
+import axios from "axios";
+import { toast } from "react-toastify";
 
 type FormData = z.infer<typeof RegistrationSchema>;
 
@@ -10,6 +13,8 @@ const Auth: React.FC = () => {
   const [formType, setFormType] = useState<"register" | "login">("register");
 
   const schema = formType === "register" ? RegistrationSchema : LoginSchema;
+
+  const { baseUrl,setToken } = useUserContext();
 
   const {
     register,
@@ -25,11 +30,45 @@ const Auth: React.FC = () => {
     reset();
   }, [formType, reset]);
 
-  const onSubmit = (data: FormData) => {
+  const onSubmit = async (data: FormData) => {
     if (formType === "register") {
-      console.log("register form data", data);
+      try {
+        const res = await axios.post(`${baseUrl}/api/user/register`, data);
+        if (res.data.sucess) {
+          setToken(res.data.token);
+          localStorage.setItem("token", res.data.token);
+          toast.success(res.data.message);
+          console.log(res.data + "success data");
+        } else {
+          toast.error(res.data.message);
+        }
+      } catch (error) {
+        if (axios.isAxiosError(error)) {
+          toast.error(error?.response?.data.message);
+        } else {
+          console.log("an unexpected error occured");
+          toast.error("something went wrong");
+        }
+      }
     } else {
-      console.log("login form data", data);
+      try {
+        console.log("login form data", data);
+        const res = await axios.post(`${baseUrl}/api/user/login`, data);
+        if (res.data.success) {
+          setToken(res.data.token);
+          localStorage.setItem("token", res.data.token);
+          toast.success(res.data.message);
+          console.log(res.data + "testing success");
+        } else {
+          toast.error(res.data.message);
+        }
+      } catch (error) {
+        if (axios.isAxiosError(error)) {
+          toast.error(error?.response?.data.message);
+        }
+        console.log(error);
+        toast.error("something went wrong");
+      }
     }
     // Here you would typically make an API call to register or login the user
   };

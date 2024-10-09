@@ -17,7 +17,7 @@ const navOptions = [
 
 interface INavdropDown {
   setShowMenu: React.Dispatch<React.SetStateAction<boolean>>;
-  setToken: React.Dispatch<React.SetStateAction<boolean>>;
+  setToken: (token: string) => void;
 }
 
 const NavDropDown = ({ setShowMenu, setToken }: INavdropDown) => {
@@ -25,7 +25,8 @@ const NavDropDown = ({ setShowMenu, setToken }: INavdropDown) => {
 
   const handleClick = (path: string) => {
     if (path === "/auth") {
-      setToken(false);
+      setToken('');
+      localStorage.removeItem('token')
     }
     navigate(path);
     setShowMenu(false);

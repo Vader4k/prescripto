@@ -21,17 +21,21 @@ export interface IDoctor {
 interface UserContextType {
   doctors: IDoctor[];
   memorizedDoctors: IDoctor[]; // memoized version of doctors for performance optimization
+  token: string;
+  setToken: (token: string) => void; // Updated type for setToken
+  baseUrl: string
 }
 
 export const UserContext = createContext<UserContextType | null>(null);
 
 export const UserProvider = ({ children }: { children: React.ReactNode }) => {
-  const baseurl = import.meta.env.VITE_API_URL
+  const baseUrl = import.meta.env.VITE_API_URL
   const [doctors, setDoctors] = useState<IDoctor[]>([])
+  const [token, setToken] = useState<string>('')
 
   const getDoctors = useCallback( async () => {
     try {
-      const res = await axios.get(`${baseurl}/api/doctor/list`)
+      const res = await axios.get(`${baseUrl}/api/doctor/list`)
       if (res.data.success) {
         setDoctors(res.data.doctors);
       } else {
@@ -44,7 +48,7 @@ export const UserProvider = ({ children }: { children: React.ReactNode }) => {
         toast.error("something went wrong.");
       }
     }
-  },[baseurl])
+  },[baseUrl])
   
   useEffect(() => {
     getDoctors();
@@ -55,7 +59,10 @@ export const UserProvider = ({ children }: { children: React.ReactNode }) => {
 
   const value = { 
     doctors,
-    memorizedDoctors
+    memorizedDoctors,
+    token,
+    setToken,
+    baseUrl
    };
 
   return <UserContext.Provider value={value}>{children}</UserContext.Provider>;

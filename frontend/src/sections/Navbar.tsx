@@ -3,6 +3,7 @@ import { NavLink, Link, useNavigate } from "react-router-dom";
 import { useMemo, useState } from "react";
 import NavDropDown from "../components/NavDropDown";
 import useClickOutside from "../hooks/useClickOutside";
+import { useUserContext } from "../hooks/useUserContext";
 
 const Navbar: React.FC = () => {
 
@@ -16,7 +17,8 @@ const Navbar: React.FC = () => {
   const navigate = useNavigate();
   const [showMenu, setShowMenu] = useState<boolean>(false);
   const [showNav, setShowNav] = useState<boolean>(false);
-  const [isAuthenticated, setIsAuthenticated] = useState<boolean>(true);
+
+  const {token, setToken} = useUserContext()
 
   const dropdownRef = useClickOutside(() => {
     setShowMenu(false);
@@ -50,7 +52,7 @@ const Navbar: React.FC = () => {
           </ul>
         </nav>
         <div className="relative flex items-center gap-2">
-          {isAuthenticated ? (
+          {token ? (
             <div className="relative" ref={dropdownRef}>
               <button
                 onClick={() => setShowMenu((prev) => !prev)}
@@ -70,7 +72,7 @@ const Navbar: React.FC = () => {
               {showMenu && (
                 <NavDropDown
                   setShowMenu={setShowMenu}
-                  setToken={setIsAuthenticated}
+                  setToken={setToken}
                 />
               )}
             </div>
