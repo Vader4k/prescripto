@@ -3,6 +3,7 @@ import validator from "validator";
 import jwt from "jsonwebtoken";
 import dotenv from "dotenv";
 import User from "../models/userModel.js";
+import { v2 as cloudinary } from "cloudinary";
 
 dotenv.config();
 
@@ -80,13 +81,9 @@ export const login = async (req, res) => {
     //fetch user id to use to get user data in frontend
     const data = existingUser._id; // Changed from newUser to existingUser
 
-    const token = jwt.sign(
-      { role: "user", data },
-      process.env.JWT_SECRET,
-      {
-        expiresIn: "1hr",
-      }
-    );
+    const token = jwt.sign({ role: "user", data }, process.env.JWT_SECRET, {
+      expiresIn: "1hr",
+    });
 
     res.status(200).json({ success: true, message: "login successful", token });
   } catch (error) {
@@ -116,6 +113,54 @@ export const getProfile = async (req, res) => {
     res.status(500).json({
       success: false,
       message: "something went wrong",
+      error: error.message,
+    });
+  }
+};
+
+export const updateProfile = async (req, res) => {
+  try {
+    const { id, name, phone, address, dob, gender } = req.body;
+    const imageFile = req.file;
+
+    const missingFields = [];
+    if (!name) missingFields.push("name");
+    if (!phone) missingFields.push("phone");
+    if (!address) missingFields.push("address");
+    if (!dob) missingFields.push("date of birth");
+    if (!gender) missingFields.push("gender");
+
+    // Check if at least one field is provided
+    if (missingFields.length === 5) { // All fields are missing
+      return res.status(400).json({
+        success: false,
+        message: "At least one field must be provided for update.",
+      });
+    }
+
+    await User.findByIdAndUpdate(id, {
+      name,
+      phone,
+      address: JSON.parse(address),
+      dob,
+      gender,
+    });
+
+    if (imageFile) {
+      const imageUpload = await cloudinary.uploader.upload(imageFile.path, {
+        resource_type: "image",
+      });
+      const imageURL = imageUpload.secure_url;
+
+      await User.findByIdAndUpdate(id, { image: imageURL });
+    }
+
+    return res.status(200).json({ success: true, message: "Profile updated" });
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({
+      success: false,
+      message: "Something went wrong",
       error: error.message,
     });
   }
