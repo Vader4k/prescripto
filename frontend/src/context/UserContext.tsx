@@ -50,15 +50,15 @@ export const UserProvider = ({ children }: { children: React.ReactNode }) => {
     localStorage.getItem("token") || null
   );
   const [userData, setUserData] = useState<IUserData>({
-    name: "Jane Doe",
-    email: "jane.doe@example.com",
-    image: "https://example.com/image.jpg",
-    phone: "123-456-7890", // Optional property
-    gender: "Female", // Optional property
-    dob: "1990-01-01", // Optional property
+    name: "",
+    email: "",
+    image: "",
+    phone: "", // Optional property
+    gender: "", // Optional property
+    dob: "", // Optional property
     address: {
-      line1: "123 Main St",
-      line2: "Apt 4B" // Optional property
+      line1: "",
+      line2: "" // Optional property
     },
     appointments: [] // Initialize as an empty array
   }); // Initialize with dummy IUserData values

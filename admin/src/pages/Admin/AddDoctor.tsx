@@ -27,7 +27,7 @@ export interface IDoctorSchema {
   };
   about: string;
   image: string;
-  availability: boolean
+  availability: boolean;
 }
 
 const AddDoctor: React.FC = () => {
@@ -41,10 +41,10 @@ const AddDoctor: React.FC = () => {
   });
 
   const baseUrl = import.meta.env.VITE_API_URL;
-  const {aToken} = useAdminContext()
+  const { aToken } = useAdminContext();
   const [loading, setLoading] = useState(false);
 
-  const onSubmit = async(data: IDoctorSchema) => {
+  const onSubmit = async (data: IDoctorSchema) => {
     setLoading(true);
     const formData = new FormData();
 
@@ -56,9 +56,15 @@ const AddDoctor: React.FC = () => {
     formData.append("fees", data.fees.toFixed());
     formData.append("speciality", data.speciality);
     formData.append("degree", data.degree);
-    formData.append("address", JSON.stringify({line1: data.address.addressLine1, line2: data.address.addressLine2}));
+    formData.append(
+      "address",
+      JSON.stringify({
+        line1: data.address.addressLine1,
+        line2: data.address.addressLine2,
+      })
+    );
     formData.append("about", data.about);
-    
+
     // Append the image file
     if (data.image) {
       formData.append("image", data.image);
@@ -67,19 +73,23 @@ const AddDoctor: React.FC = () => {
       return;
     }
     try {
-      const res = await axios.post(`${baseUrl}/api/admin/add-doctor`, formData, {
-        headers: {
-          // Authorization: `Bearer ${aToken}`,
-          aToken,
-          'Content-Type': 'multipart/form-data'
-        },
-      });
+      const res = await axios.post(
+        `${baseUrl}/api/admin/add-doctor`,
+        formData,
+        {
+          headers: {
+            // Authorization: `Bearer ${aToken}`,
+            aToken,
+            "Content-Type": "multipart/form-data",
+          },
+        }
+      );
       console.log(res.data);
-      if(res.data.success){
+      if (res.data.success) {
         toast.success(res.data.message);
         setLoading(false);
         reset();
-      }else {
+      } else {
         toast.error(res.data.message);
       }
     } catch (error) {
@@ -87,13 +97,17 @@ const AddDoctor: React.FC = () => {
       if (axios.isAxiosError(error)) {
         toast.error(error.response?.data.message);
       } else {
-        toast.error('An unexpected error occurred');
+        toast.error("An unexpected error occurred");
       }
     }
   };
 
   return (
-    <form onSubmit={handleSubmit(onSubmit)} className="w-full" encType="multipart/form-data">
+    <form
+      onSubmit={handleSubmit(onSubmit)}
+      className="w-full"
+      encType="multipart/form-data"
+    >
       <div className="w-full m-5">
         <p className="mb-3 text-lg font-medium">Add Doctor</p>
 

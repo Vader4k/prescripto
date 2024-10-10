@@ -12,18 +12,28 @@ export const LoginSchema = z.object({
 });
 
 export const UpdateUserInfoSchema = z.object({
-  fullname: z
+  name: z
     .string()
     .min(3, "Name must be at least 3 characters long")
-    .optional(),
-  phone: z.string().min(10, "Phone number too short").optional(),
-  image: z.string().optional(),
-  gender: z.enum(["Male", "Female"]).optional(),
-  dob: z.string().optional(),
+    .optional()
+    .nullable(), // Allow null values
+  phone: z.string().min(10, "Phone number too short").optional().nullable(), // Allow null values
+  image: z
+    .preprocess((files) => {
+      if (files instanceof FileList) {
+        return files[0];
+      }
+      return files;
+    }, z.instanceof(File, { message: "Image is required" }))
+    .optional()
+    .nullable(),
+  gender: z.enum(["Male", "Female"]).optional().nullable(),
+  dob: z.string().optional().nullable(),
   address: z
     .object({
       line1: z.string().optional(),
       line2: z.string().optional(),
     })
-    .optional(),
+    .optional()
+    .nullable(),
 });
