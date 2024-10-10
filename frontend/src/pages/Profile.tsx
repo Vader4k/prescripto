@@ -3,6 +3,7 @@ import { assets } from "../assets/assets_frontend/assets";
 import { UpdateUserInfoSchema } from "../utils/Validator";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { useUserContext } from "../hooks/useUserContext";
 
 interface IFormData {
   fullname?: string;
@@ -19,19 +20,21 @@ interface IFormData {
 const Profile: React.FC = () => {
   const [isEdit, setIsEdit] = useState<boolean>(false);
 
-  const [userData, setUserData] = useState<IFormData>({
-    fullname: "Edward Vincent",
+  const {userData} = useUserContext() || {userData: []}
+
+  const [formData, setFormData] = useState<IFormData>({
+    fullname: userData.name,
     image: assets.profile_pic,
-    phone: "+234 010 599 504",
+    phone: userData.phone || "",
     address: {
-      line1: "65 richmond, cross",
-      line2: "circle church road, england",
+      line1: userData.address?.line1 || "", 
+      line2: userData.address?.line2 || "", 
     },
-    gender: "Male",
-    dob: "2000-01-20",
+    gender: (userData.gender as "Male" | "Female") || undefined,
+    dob: userData.dob || "",
   });
 
-  const userEmail = "King@gmail.com"; // static for now
+  const userEmail = userData.email; // static for now
 
   const {
     register,
@@ -39,11 +42,11 @@ const Profile: React.FC = () => {
     formState: { errors },
   } = useForm<IFormData>({
     resolver: zodResolver(UpdateUserInfoSchema),
-    defaultValues: userData, // initial with default value
+    defaultValues: formData, // initial with default value
   });
 
   const onSubmit = (data: IFormData) => {
-    setUserData((prev) => ({
+    setFormData((prev) => ({
       ...prev,
       ...data,
     }));
@@ -52,11 +55,11 @@ const Profile: React.FC = () => {
   };
 
   return (
-    <div className="flex flex-col gap-2 max-w-lg text-sm">
+    <div className="flex flex-col max-w-lg gap-2 text-sm">
       <img
         className="rounded-lg max-w-36"
         src={userData.image}
-        alt={userData.fullname + "image"}
+        alt={userData.name + "image"}
       />
       <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-4">
         {isEdit ? (
@@ -71,7 +74,7 @@ const Profile: React.FC = () => {
             )}
           </>
         ) : (
-          <p className="my-4 text-2xl font-medium">{userData.fullname}</p>
+          <p className="my-4 text-2xl font-medium capitalize">{userData.name}</p>
         )}
 
         <hr className="h-1 bg-zinc-500" />
@@ -83,7 +86,7 @@ const Profile: React.FC = () => {
           <div className="flex flex-col gap-3 mt-4 text-neutral-700">
             <div className="flex gap-8">
               <p className="font-medium">Email id:</p>
-              <p className="text-blue-500">{userEmail}</p>{" "}
+              <p className="text-blue-500 capitalize">{userEmail}</p>{" "}
               {/* Static or fetched email */}
             </div>
             <div className="flex gap-8">
@@ -113,7 +116,7 @@ const Profile: React.FC = () => {
                     type="text"
                   />
                   {errors.address?.line1 && (
-                    <p className="text-red-500">
+                    <p className="text-red-500 capitalize">
                       {errors.address.line1.message}
                     </p>
                   )}
@@ -123,7 +126,7 @@ const Profile: React.FC = () => {
                     type="text"
                   />
                   {errors.address?.line2 && (
-                    <p className="text-red-500">
+                    <p className="text-red-500 capitalize">
                       {errors.address.line2.message}
                     </p>
                   )}
@@ -157,7 +160,7 @@ const Profile: React.FC = () => {
                   )}
                 </>
               ) : (
-                <p className="text-blue-500">{userData.gender}</p>
+                <p className="text-blue-500 capitalize">{userData.gender}</p>
               )}
             </div>
           </div>
@@ -176,7 +179,7 @@ const Profile: React.FC = () => {
                 )}
               </div>
             ) : (
-              <p className="text-blue-500">{userData.dob}</p>
+              <p className="text-blue-500 capitalize">{userData.dob}</p>
             )}
           </div>
         </div>
@@ -184,14 +187,14 @@ const Profile: React.FC = () => {
         <div className="mt-10">
           {isEdit ? (
             <button
-              className="px-8 py-3 rounded-full border transition-all border-primary hover:bg-primary hover:text-white"
+              className="px-8 py-3 transition-all border rounded-full border-primary hover:bg-primary hover:text-white"
               type="submit" // This is fine for the Save button
             >
               Save information
             </button>
           ) : (
             <button
-              className="px-8 py-3 rounded-full border transition-all w-fit border-primary hover:bg-primary hover:text-white"
+              className="px-8 py-3 transition-all border rounded-full w-fit border-primary hover:bg-primary hover:text-white"
               onClick={() => {
                 setIsEdit(true);
               }}

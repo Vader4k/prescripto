@@ -26,8 +26,8 @@ export interface IUserData {
   gender?: string;
   dob?: string;
   address?: {
-    "line1"?: '',
-    "line2"?: ''
+    "line1"?: string,
+    "line2"?: string
   },
   appointments?: []
 }
@@ -38,7 +38,7 @@ type UserContextType = {
   token: string | null; // Updated to allow null
   setToken: React.Dispatch<React.SetStateAction<string | null>>;
   baseUrl: string;
-  userData: IUserData[]
+  userData: IUserData; // Changed to reflect that userData is an object, not an array
 };
 
 export const UserContext = createContext<UserContextType | null>(null);
@@ -49,7 +49,19 @@ export const UserProvider = ({ children }: { children: React.ReactNode }) => {
   const [token, setToken] = useState<string | null>(
     localStorage.getItem("token") || null
   );
-  const [userData, setUserData] = useState()
+  const [userData, setUserData] = useState<IUserData>({
+    name: "Jane Doe",
+    email: "jane.doe@example.com",
+    image: "https://example.com/image.jpg",
+    phone: "123-456-7890", // Optional property
+    gender: "Female", // Optional property
+    dob: "1990-01-01", // Optional property
+    address: {
+      line1: "123 Main St",
+      line2: "Apt 4B" // Optional property
+    },
+    appointments: [] // Initialize as an empty array
+  }); // Initialize with dummy IUserData values
 
   const getDoctors = useCallback(async () => {
     try {
@@ -106,7 +118,7 @@ export const UserProvider = ({ children }: { children: React.ReactNode }) => {
     token,
     setToken,
     baseUrl,
-    userData: userData || []
+    userData: userData || null,
   };
 
   return <UserContext.Provider value={value}>{children}</UserContext.Provider>;
