@@ -24,7 +24,7 @@ const Hero: React.FC = () => {
       </div>
       <div className="absolute bottom-0 md:right-6">
         <img
-          className="max-w-[600px] xl:max-w-[750px] w-full px-6"
+          className="max-w-[600px] xl:max-w-[700px] w-full px-6"
           src={assets.header_img}
           alt="hero_image"
         />

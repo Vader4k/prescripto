@@ -37,7 +37,7 @@ const Doctors: React.FC = () => {
             <div className="flex flex-col gap-3">
               {specialityData.map((link) => (
                 <button
-                  className="w-full p-3 text-sm transition-colors border rounded-xl hover:bg-gray-100"
+                  className="w-full text-sm capitalize transition-colors border cap rounded-xl hover:bg-gray-100"
                   onClick={() => navigate(`/doctors/${link.speciality}`)}
                   key={link.speciality}
                 >
@@ -49,7 +49,7 @@ const Doctors: React.FC = () => {
           <div className="flex-col hidden gap-3 sm:flex ">
               {specialityData.map((link) => (
                 <button
-                  className="w-full p-3 text-sm transition-colors border rounded-xl hover:bg-gray-100"
+                  className="w-full p-3 text-sm capitalize transition-colors border rounded-xl hover:bg-gray-100"
                   onClick={() => navigate(`/doctors/${link.speciality}`)}
                   key={link.speciality}
                 >
@@ -61,7 +61,7 @@ const Doctors: React.FC = () => {
         <div className="w-full md:w-[80%]">
           {filteredDoctors.length > 0 ? (
             <div>
-              <h2 className="mb-4 text-xl font-semibold">
+              <h2 className="mb-4 text-xl font-semibold capitalize">
                 {speciality ? `${speciality} Doctors` : "All Doctors"}
               </h2>
               <ul className="grid w-full gap-4 px-3 pt-5 grid-cols-auto gap-y-6 sm:px-0">

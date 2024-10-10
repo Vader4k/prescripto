@@ -22,8 +22,8 @@ const DoctorCard = ({_id, name, image, speciality}:DoctorCardProps) => {
           <div className="w-2 h-2 bg-green-500 rounded-full" />
           <p>Available</p>
         </div>
-        <p className="text-lg font-medium text-gray-900">{name}</p>
-        <p className="text-sm text-gray-500">{speciality}</p>
+        <p className="font-medium text-gray-900 text-md">{name}</p>
+        <p className="text-sm text-gray-500 capitalize">{speciality}</p>
       </div>
     </button>
   );

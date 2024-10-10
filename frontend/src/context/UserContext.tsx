@@ -18,12 +18,27 @@ export interface IDoctor {
   };
 }
 
+export interface IUserData {
+  name: string;
+  email: string;
+  image: string;
+  phone?: string;
+  gender?: string;
+  dob?: string;
+  address?: {
+    "line1"?: '',
+    "line2"?: ''
+  },
+  appointments?: []
+}
+
 type UserContextType = {
   doctors: IDoctor[];
   memorizedDoctors: IDoctor[];
   token: string | null; // Updated to allow null
   setToken: React.Dispatch<React.SetStateAction<string | null>>;
   baseUrl: string;
+  userData: IUserData[]
 };
 
 export const UserContext = createContext<UserContextType | null>(null);
@@ -34,6 +49,7 @@ export const UserProvider = ({ children }: { children: React.ReactNode }) => {
   const [token, setToken] = useState<string | null>(
     localStorage.getItem("token") || null
   );
+  const [userData, setUserData] = useState()
 
   const getDoctors = useCallback(async () => {
     try {
@@ -54,7 +70,33 @@ export const UserProvider = ({ children }: { children: React.ReactNode }) => {
 
   useEffect(() => {
     getDoctors();
-  }, []);
+  }, [getDoctors]);
+
+  const getUserData = useCallback(async () => {
+    try {
+      const res = await axios.get(`${baseUrl}/api/user/profile`, {
+        headers: {token}
+      })
+      if(res.data.success){
+        setUserData(res.data.data)
+      }else{
+        return toast.error(res.data.message)
+      }
+    } catch (error) {
+      if(axios.isAxiosError(error)){
+        toast.error(error?.response?.data.message)
+      }
+      console.log(error)
+      toast.error("something went wrong")
+    }
+  }, [baseUrl, token])
+
+  useEffect(()=> {
+    if(token){
+      getUserData()
+    }
+  },[token, getUserData])
+  
 
   const memorizedDoctors = useMemo(() => doctors, [doctors]);
 
@@ -64,6 +106,7 @@ export const UserProvider = ({ children }: { children: React.ReactNode }) => {
     token,
     setToken,
     baseUrl,
+    userData: userData || []
   };
 
   return <UserContext.Provider value={value}>{children}</UserContext.Provider>;

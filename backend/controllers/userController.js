@@ -5,6 +5,7 @@ import dotenv from "dotenv";
 import User from "../models/userModel.js";
 import { v2 as cloudinary } from "cloudinary";
 
+
 dotenv.config();
 
 export const register = async (req, res) => {
@@ -120,7 +121,8 @@ export const getProfile = async (req, res) => {
 
 export const updateProfile = async (req, res) => {
   try {
-    const { id, name, phone, address, dob, gender } = req.body;
+    const {id} = req.user
+    const { name, phone, address, dob, gender } = req.body;
     const imageFile = req.file;
 
     const missingFields = [];
@@ -141,7 +143,7 @@ export const updateProfile = async (req, res) => {
     await User.findByIdAndUpdate(id, {
       name,
       phone,
-      address: JSON.parse(address),
+      address,
       dob,
       gender,
     });
