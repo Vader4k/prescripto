@@ -123,7 +123,7 @@ export const updateProfile = async (req, res) => {
   try {
     const {id} = req.user
     const { name, phone, address, dob, gender } = req.body;
-    const imageFile = req.file;
+    const image = req.file;
 
     const missingFields = [];
     if (!name) missingFields.push("name");
@@ -131,31 +131,33 @@ export const updateProfile = async (req, res) => {
     if (!address) missingFields.push("address");
     if (!dob) missingFields.push("date of birth");
     if (!gender) missingFields.push("gender");
+    if (!image) missingFields.push("image")
 
     // Check if at least one field is provided
-    if (missingFields.length === 5) { // All fields are missing
+    if (missingFields.length === 6) { // All fields are missing
       return res.status(400).json({
         success: false,
         message: "At least one field must be provided for update.",
       });
     }
 
+    let imageUrl
+
+    if (image){
+      const uploadResult = await cloudinary.uploader.upload(image.path, {
+        resource_type: 'image'
+      })
+      imageUrl = uploadResult
+    }
+  
     await User.findByIdAndUpdate(id, {
       name,
       phone,
       address,
       dob,
       gender,
+      ...(imageUrl && { image: imageUrl})
     });
-
-    if (imageFile) {
-      const imageUpload = await cloudinary.uploader.upload(imageFile.path, {
-        resource_type: "image",
-      });
-      const imageURL = imageUpload.secure_url;
-
-      await User.findByIdAndUpdate(id, { image: imageURL });
-    }
 
     return res.status(200).json({ success: true, message: "Profile updated" });
   } catch (error) {

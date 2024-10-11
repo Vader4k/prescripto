@@ -3,6 +3,8 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useUserContext } from "../hooks/useUserContext";
 import { UpdateUserInfoSchema } from "../utils/Validator";
+import axios from "axios";
+import { toast } from "react-toastify";
 
 interface IFormData {
   name?: string;
@@ -18,7 +20,7 @@ interface IFormData {
 
 const Profile: React.FC = () => {
   const [isEdit, setIsEdit] = useState<boolean>(false);
-  const { userData, token, baseUrl } = useUserContext();
+  const { userData, token, baseUrl, getUserData } = useUserContext();
   const [profilePic, setProfilePic] = useState<string | null>(null);
 
   const userEmail = userData.email; // static for now
@@ -31,27 +33,47 @@ const Profile: React.FC = () => {
     resolver: zodResolver(UpdateUserInfoSchema),
   });
 
-  const onSubmit = async(data: IFormData) => {
-   try {
-      const formData = new FormData ()
-      
-      formData.append('name', data.name || '')
-      formData.append('phone', data.phone || '')
-      formData.append('gender', data.gender === 'Male' ? 'Male' : 'Female')
-      formData.append('dob', data.dob || '')
-      formData.append('address', JSON.stringify({
-        line1: data.address?.line1,
-        line2: data.address?.line2
-      }))
+  const onSubmit = async (data: IFormData) => {
+    try {
+      console.log("Form Data:", data); // Log the incoming data
 
-      if(data.image){
-        formData.append("image", data.image)
+      const formData = new FormData();
+
+      formData.append("name", data.name || "");
+      formData.append("phone", data.phone || "");
+      formData.append("gender", data.gender === "Male" ? "Male" : "Female");
+      formData.append("dob", data.dob || "");
+      formData.append(
+        "address",
+        JSON.stringify({
+          line1: data.address?.line1,
+          line2: data.address?.line2,
+        })
+      );
+
+      if (data.image) {
+        formData.append("image", data.image);
       }
-   } catch (error) {
-    console.log(error)
-   }
-  };
 
+      const res = await axios.post(`${baseUrl}/api/user/update-profile`, data, {
+        headers: { token },
+      });
+      if (res.data.success) {
+        toast.success(res.data.message);
+        setIsEdit(false)
+        getUserData()
+      } else {
+        toast.error(res.data.message);
+      }
+    } catch (error) {
+      console.log(error);
+      if (axios.isAxiosError(error)) {
+        toast.error(error.response?.data.message);
+      } else {
+        toast.error("An unexpected error occured");
+      }
+    }
+  };
 
   return (
     userData && (

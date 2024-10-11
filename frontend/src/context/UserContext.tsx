@@ -39,6 +39,7 @@ type UserContextType = {
   setToken: React.Dispatch<React.SetStateAction<string | null>>;
   baseUrl: string;
   userData: IUserData; // Changed to reflect that userData is an object, not an array
+  getUserData: () => void
 };
 
 export const UserContext = createContext<UserContextType | null>(null);
@@ -119,6 +120,7 @@ export const UserProvider = ({ children }: { children: React.ReactNode }) => {
     setToken,
     baseUrl,
     userData: userData || null,
+    getUserData
   };
 
   return <UserContext.Provider value={value}>{children}</UserContext.Provider>;
