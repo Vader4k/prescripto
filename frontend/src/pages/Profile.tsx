@@ -22,6 +22,7 @@ const Profile: React.FC = () => {
   const [isEdit, setIsEdit] = useState<boolean>(false);
   const { userData, token, baseUrl, getUserData } = useUserContext();
   const [profilePic, setProfilePic] = useState<string | null>(null);
+  const [loading, setLoading] = useState<boolean>(false);
 
   const userEmail = userData.email; // static for now
 
@@ -35,6 +36,7 @@ const Profile: React.FC = () => {
 
   const onSubmit = async (data: IFormData) => {
     try {
+      setLoading(true);
       const formData = new FormData();
 
       formData.append("name", data.name || "");
@@ -53,20 +55,27 @@ const Profile: React.FC = () => {
         formData.append("image", data.image);
       }
 
-      const res = await axios.post(`${baseUrl}/api/user/update-profile`, formData, {
-        headers: { 
-          "Content-Type": "multipart/form-data",
-          token 
-        },
-      });
+      const res = await axios.post(
+        `${baseUrl}/api/user/update-profile`,
+        formData,
+        {
+          headers: {
+            "Content-Type": "multipart/form-data",
+            token,
+          },
+        }
+      );
       if (res.data.success) {
         toast.success(res.data.message);
-        setIsEdit(false)
-        getUserData()
+        setIsEdit(false);
+        getUserData();
+        setLoading(false);
       } else {
         toast.error(res.data.message);
+        setLoading(false);
       }
     } catch (error) {
+      setLoading(false);
       console.log(error);
       if (axios.isAxiosError(error)) {
         toast.error(error.response?.data.message);
@@ -84,7 +93,7 @@ const Profile: React.FC = () => {
             <div>
               <label htmlFor="image">
                 <img
-                  className="max-w-52"
+                  className="rounded-full max-w-52 h-52"
                   src={
                     profilePic
                       ? URL.createObjectURL(profilePic as unknown as Blob)
@@ -114,7 +123,7 @@ const Profile: React.FC = () => {
           ) : (
             <div>
               <img
-                className="max-w-52"
+                className="rounded-full max-w-52 h-52"
                 src={userData.image}
                 alt={userData.name + "profile picture"}
               />
@@ -247,25 +256,27 @@ const Profile: React.FC = () => {
           </div>
 
           <div className="mt-10">
-            {isEdit ? (
+            {isEdit && (
               <button
+                disabled={loading}
                 className="px-8 py-3 transition-all border rounded-full border-primary hover:bg-primary hover:text-white"
                 type="submit" // This is fine for the Save button
               >
                 Save information
               </button>
-            ) : (
-              <div
-                className="px-8 py-3 transition-all border rounded-full w-fit border-primary hover:bg-primary hover:text-white"
-                onClick={() => {
-                  setIsEdit(true);
-                }}
-              >
-                Edit
-              </div>
             )}
           </div>
         </form>
+        {!isEdit && (
+          <button
+            className="px-8 py-3 transition-all border rounded-full w-fit border-primary hover:bg-primary hover:text-white"
+            onClick={() => {
+              setIsEdit(true);
+            }}
+          >
+            Edit
+          </button>
+        )}
       </div>
     )
   );

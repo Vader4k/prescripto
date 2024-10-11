@@ -4,7 +4,8 @@ import jwt from "jsonwebtoken";
 import dotenv from "dotenv";
 import User from "../models/userModel.js";
 import { v2 as cloudinary } from "cloudinary";
-
+import Doctor from "../models/doctorModel.js";
+import Appointment from "../models/appointmentModel.js";
 
 dotenv.config();
 
@@ -37,9 +38,14 @@ export const register = async (req, res) => {
     const data = newUser._id;
 
     //generate token
-    const token = jwt.sign({ role: "user", data, email }, process.env.JWT_SECRET, { // Added email to the payload
-      expiresIn: "7d",
-    });
+    const token = jwt.sign(
+      { role: "user", data, email },
+      process.env.JWT_SECRET,
+      {
+        // Added email to the payload
+        expiresIn: "7d",
+      }
+    );
     res.status(201).json({
       success: true,
       message: "Registration successfull.",
@@ -82,9 +88,13 @@ export const login = async (req, res) => {
     //fetch user id to use to get user data in frontend
     const data = existingUser._id; // Changed from newUser to existingUser
 
-    const token = jwt.sign({ role: "user", data, email }, process.env.JWT_SECRET, {
-      expiresIn: "7d",
-    });
+    const token = jwt.sign(
+      { role: "user", data, email },
+      process.env.JWT_SECRET,
+      {
+        expiresIn: "7d",
+      }
+    );
 
     res.status(200).json({ success: true, message: "login successful", token });
   } catch (error) {
@@ -121,7 +131,7 @@ export const getProfile = async (req, res) => {
 
 export const updateProfile = async (req, res) => {
   try {
-    const {id} = req.user
+    const { id } = req.user;
     const { name, phone, address, dob, gender } = req.body;
     const image = req.file;
 
@@ -131,41 +141,42 @@ export const updateProfile = async (req, res) => {
     if (!address) missingFields.push("address");
     if (!dob) missingFields.push("date of birth");
     if (!gender) missingFields.push("gender");
-    if (!image) missingFields.push("image")
+    if (!image) missingFields.push("image");
 
     // Check if at least one field is provided
-    if (missingFields.length === 6) { // All fields are missing
+    if (missingFields.length === 6) {
+      // All fields are missing
       return res.status(400).json({
         success: false,
         message: "At least one field must be provided for update.",
       });
     }
 
-    let imageUrl = null
+    let imageUrl = null;
 
-    if (image){
-      console.log("image path:", image.path)
+    if (image) {
+      console.log("image path:", image.path);
       const uploadResult = await cloudinary.uploader.upload(image.path, {
-        resource_type: 'image'
-      })
-      
-      if(uploadResult.secure_url){
-        imageUrl = uploadResult.secure_url
+        resource_type: "image",
+      });
+
+      if (uploadResult.secure_url) {
+        imageUrl = uploadResult.secure_url;
       } else {
         return res.status(500).json({
           success: false,
-          message: "Failed to upload image to cloudinary"
-        })
+          message: "Failed to upload image to cloudinary",
+        });
       }
     }
-  
+
     await User.findByIdAndUpdate(id, {
       name,
       phone,
       address,
       dob,
       gender,
-      ...(imageUrl && { image: imageUrl})
+      ...(imageUrl && { image: imageUrl }),
     });
 
     return res.status(200).json({ success: true, message: "Profile updated" });
@@ -175,6 +186,107 @@ export const updateProfile = async (req, res) => {
       success: false,
       message: "Something went wrong",
       error: error.message,
+    });
+  }
+};
+
+//book appointment
+export const bookAppointment = async (req, res) => {
+  try {
+    const { id } = req.user; // Get the user's ID from the request
+    const { docId, slotDate, slotTime } = req.body; // Get doctor ID, date, and time from the request body
+
+    // Find the doctor by ID and exclude the password field
+    const docData = await Doctor.findById(docId).select("-password");
+    if (!docData) {
+      // If no doctor is found, return an error
+      return res
+        .status(401)
+        .json({ success: false, message: "No doctor found" });
+    }
+    if (!docData.availability) {
+      // If the doctor is not available, return an error
+      return res
+        .status(401)
+        .json({ success: false, message: "Doctor not available" });
+    }
+
+    // Check if a date is provided
+    if (!slotDate) {
+      return res
+        .status(400)
+        .json({
+          success: false,
+          message: "you must pick a date for appointment",
+        });
+    }
+
+    // Check if a time is provided
+    if (!slotTime) {
+      return res
+        .status(400)
+        .json({
+          success: false,
+          message: "you must pick a time for appointment",
+        });
+    }
+
+    let slots_booked = docData.slots_booked; // Get the booked slots for the doctor
+    // Check if the slot has been booked on the selected date
+    if (slots_booked[slotDate]) {
+      if (slots_booked[slotDate].includes(slotTime)) {
+        // If the slot is already booked, return an error
+        return res
+          .status(400)
+          .json({ success: false, message: "Slot not available" });
+      } else {
+        // If the slot is available, add it to the booked slots
+        slots_booked[slotDate].push(slotTime);
+      }
+    } else {
+      // If no slots are booked for that date, initialize the array and add the slot
+      slots_booked[slotDate] = [];
+      slots_booked[slotDate].push(slotTime);
+    }
+
+    // Find the user by ID and exclude the password field
+    const userData = await User.findById(id).select("-password");
+    if (!userData) {
+      // If no user is found, return an error
+      return res.status(400).json({ success: false, message: "No user found" });
+    }
+
+    delete docData.slots_booked; // Remove the booked slots from the doctor data
+
+    // Prepare the appointment data
+    const appointmentData = {
+      id, // User ID
+      docId, // Doctor ID
+      userData, // User data
+      docData, // Doctor data
+      amount: docData.fee, // Doctor's fee
+      slotTime, // Selected time
+      slotDate, // Selected date
+      Date: Date.now(), // Current date and time
+    };
+
+    // Create a new appointment instance
+    const newAppointment = new Appointment(appointmentData);
+
+    // Save the new appointment to the database
+    await newAppointment.save();
+
+    // Update the doctor's booked slots in the database
+    await Doctor.findByIdAndUpdate(docId, { slots_booked });
+
+    // Respond with a success message
+    res.status(200).json({ success: true, message: "Appointment booked" });
+  } catch (error) {
+    console.log(error); // Log any errors
+    res.status(500).json({
+      success: false,
+      message: "Something went wrong",
+      error: error.message, // Return the error message
     });
   }
 };

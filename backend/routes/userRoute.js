@@ -1,5 +1,5 @@
 import express from 'express'
-import { register, login, getProfile, updateProfile } from '../controllers/userController.js'
+import { register, login, getProfile, updateProfile, bookAppointment } from '../controllers/userController.js'
 import { authUser } from '../auth/authUser.js'
 import upload from '../middlewares/multer.js'
 
@@ -9,5 +9,6 @@ userRouter.post('/register', register)
 userRouter.post('/login', login)
 userRouter.get('/profile', authUser, getProfile)
 userRouter.post('/update-profile', authUser, upload.single("image"), updateProfile)
+userRouter.post('/book-appointment', authUser, bookAppointment)
 
 export default userRouter

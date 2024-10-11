@@ -6,19 +6,21 @@ import useClickOutside from "../hooks/useClickOutside";
 import { useUserContext } from "../hooks/useUserContext";
 
 const Navbar: React.FC = () => {
+  const navLinks = useMemo(
+    () => [
+      { name: "Home", path: "/" },
+      { name: "Doctors", path: "/doctors" },
+      { name: "About", path: "/about" },
+      { name: "Contact", path: "/contact" },
+    ],
+    []
+  );
 
-  const navLinks = useMemo(() => [
-    { name: "Home", path: "/" },
-    { name: "Doctors", path: "/doctors" },
-    { name: "About", path: "/about" },
-    { name: "Contact", path: "/contact" },
-  ], []);
-  
   const navigate = useNavigate();
   const [showMenu, setShowMenu] = useState<boolean>(false);
   const [showNav, setShowNav] = useState<boolean>(false);
 
-  const {token, setToken} = useUserContext()
+  const { token, setToken, userData } = useUserContext();
 
   const dropdownRef = useClickOutside(() => {
     setShowMenu(false);
@@ -52,15 +54,15 @@ const Navbar: React.FC = () => {
           </ul>
         </nav>
         <div className="relative flex items-center gap-2">
-          {token ? (
+          {token && userData ? (
             <div className="relative" ref={dropdownRef}>
               <button
                 onClick={() => setShowMenu((prev) => !prev)}
                 className="flex items-center w-full gap-4 cursor-pointer group"
               >
                 <img
-                  className="w-8 rounded-full"
-                  src={assets.profile_pic}
+                  className="w-8 h-8 rounded-full"
+                  src={userData.image}
                   alt="Profile"
                 />
                 <img
@@ -70,10 +72,7 @@ const Navbar: React.FC = () => {
                 />
               </button>
               {showMenu && (
-                <NavDropDown
-                  setShowMenu={setShowMenu}
-                  setToken={setToken}
-                />
+                <NavDropDown setShowMenu={setShowMenu} setToken={setToken} />
               )}
             </div>
           ) : (

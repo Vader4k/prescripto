@@ -12,12 +12,12 @@ export const LoginSchema = z.object({
 });
 
 export const UpdateUserInfoSchema = z.object({
-  name: z
-    .string()
-    .min(3, "Name must be at least 3 characters long")
-    .optional()
-    .nullable(), // Allow null values
-  phone: z.string().min(10, "Phone number too short").optional().nullable(), // Allow null values
+  name: z.optional(
+    z.string().min(3, "Username should be at least 3 characters")
+  ), // Allow null values
+  phone: z.optional(
+    z.string().min(10, "Phone number too short")
+  ), // Allow null values
   image: z
     .preprocess((files) => {
       if (files instanceof FileList && files.length > 0) {
@@ -37,3 +37,4 @@ export const UpdateUserInfoSchema = z.object({
     .optional()
     .nullable(),
 });
+
