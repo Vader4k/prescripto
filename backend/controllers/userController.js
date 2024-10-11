@@ -141,13 +141,22 @@ export const updateProfile = async (req, res) => {
       });
     }
 
-    let imageUrl
+    let imageUrl = null
 
     if (image){
+      console.log("image path:", image.path)
       const uploadResult = await cloudinary.uploader.upload(image.path, {
         resource_type: 'image'
       })
-      imageUrl = uploadResult
+      
+      if(uploadResult.secure_url){
+        imageUrl = uploadResult.secure_url
+      } else {
+        return res.status(500).json({
+          success: false,
+          message: "Failed to upload image to cloudinary"
+        })
+      }
     }
   
     await User.findByIdAndUpdate(id, {

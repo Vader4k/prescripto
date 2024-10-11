@@ -35,8 +35,6 @@ const Profile: React.FC = () => {
 
   const onSubmit = async (data: IFormData) => {
     try {
-      console.log("Form Data:", data); // Log the incoming data
-
       const formData = new FormData();
 
       formData.append("name", data.name || "");
@@ -55,8 +53,11 @@ const Profile: React.FC = () => {
         formData.append("image", data.image);
       }
 
-      const res = await axios.post(`${baseUrl}/api/user/update-profile`, data, {
-        headers: { token },
+      const res = await axios.post(`${baseUrl}/api/user/update-profile`, formData, {
+        headers: { 
+          "Content-Type": "multipart/form-data",
+          token 
+        },
       });
       if (res.data.success) {
         toast.success(res.data.message);
@@ -143,12 +144,12 @@ const Profile: React.FC = () => {
               CONTACT INFORMATION
             </p>
             <div className="flex flex-col gap-3 mt-4 text-neutral-700">
-              <div className="flex gap-8">
+              <div className="flex gap-10">
                 <p className="font-medium">Email id:</p>
                 <p className="text-blue-500 capitalize">{userEmail}</p>{" "}
                 {/* Static or fetched email */}
               </div>
-              <div className="flex gap-8">
+              <div className="flex gap-12">
                 <p className="font-medium">Phone:</p>
                 {isEdit ? (
                   <>
