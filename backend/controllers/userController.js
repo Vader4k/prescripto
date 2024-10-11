@@ -37,8 +37,8 @@ export const register = async (req, res) => {
     const data = newUser._id;
 
     //generate token
-    const token = jwt.sign({ role: "user", data }, process.env.JWT_SECRET, {
-      expiresIn: "1hr",
+    const token = jwt.sign({ role: "user", data, email }, process.env.JWT_SECRET, { // Added email to the payload
+      expiresIn: "7d",
     });
     res.status(201).json({
       success: true,
@@ -82,8 +82,8 @@ export const login = async (req, res) => {
     //fetch user id to use to get user data in frontend
     const data = existingUser._id; // Changed from newUser to existingUser
 
-    const token = jwt.sign({ role: "user", data }, process.env.JWT_SECRET, {
-      expiresIn: "1hr",
+    const token = jwt.sign({ role: "user", data, email }, process.env.JWT_SECRET, {
+      expiresIn: "7d",
     });
 
     res.status(200).json({ success: true, message: "login successful", token });

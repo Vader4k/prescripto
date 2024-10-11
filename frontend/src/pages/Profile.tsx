@@ -1,8 +1,8 @@
-import { useState, useEffect } from "react";
-import { UpdateUserInfoSchema } from "../utils/Validator";
+import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useUserContext } from "../hooks/useUserContext";
+import { UpdateUserInfoSchema } from "../utils/Validator";
 
 interface IFormData {
   name?: string;
@@ -18,20 +18,8 @@ interface IFormData {
 
 const Profile: React.FC = () => {
   const [isEdit, setIsEdit] = useState<boolean>(false);
-  const { userData } = useUserContext();
+  const { userData, token, baseUrl } = useUserContext();
   const [profilePic, setProfilePic] = useState<string | null>(null);
-
-  const [formData, setFormData] = useState<IFormData>({
-    name: userData.name,
-    image: userData.image,
-    phone: userData.phone || "",
-    address: {
-      line1: userData.address?.line1 || "",
-      line2: userData.address?.line2 || "",
-    },
-    gender: (userData.gender as "Male" | "Female") || undefined,
-    dob: userData.dob || "",
-  });
 
   const userEmail = userData.email; // static for now
 
@@ -39,24 +27,31 @@ const Profile: React.FC = () => {
     register,
     handleSubmit,
     formState: { errors },
-    reset,
   } = useForm<IFormData>({
     resolver: zodResolver(UpdateUserInfoSchema),
-    defaultValues: formData, // initial with default value
   });
 
-  const onSubmit = (data: IFormData) => {
-    setFormData((prev) => ({
-      ...prev,
-      ...data,
-    }));
-    setIsEdit(false);
-    console.log(data); // Log the new data instead of formData
+  const onSubmit = async(data: IFormData) => {
+   try {
+      const formData = new FormData ()
+      
+      formData.append('name', data.name || '')
+      formData.append('phone', data.phone || '')
+      formData.append('gender', data.gender === 'Male' ? 'Male' : 'Female')
+      formData.append('dob', data.dob || '')
+      formData.append('address', JSON.stringify({
+        line1: data.address?.line1,
+        line2: data.address?.line2
+      }))
+
+      if(data.image){
+        formData.append("image", data.image)
+      }
+   } catch (error) {
+    console.log(error)
+   }
   };
 
-  useEffect(() => {
-    reset(formData); // Reset form values to the updated formData
-  }, [userData, reset, formData]); // Add userData as a dependency
 
   return (
     userData && (
@@ -66,6 +61,7 @@ const Profile: React.FC = () => {
             <div>
               <label htmlFor="image">
                 <img
+                  className="max-w-52"
                   src={
                     profilePic
                       ? URL.createObjectURL(profilePic as unknown as Blob)

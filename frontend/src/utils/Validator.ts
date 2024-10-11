@@ -20,7 +20,7 @@ export const UpdateUserInfoSchema = z.object({
   phone: z.string().min(10, "Phone number too short").optional().nullable(), // Allow null values
   image: z
     .preprocess((files) => {
-      if (files instanceof FileList) {
+      if (files instanceof FileList && files.length > 0) {
         return files[0];
       }
       return files;
