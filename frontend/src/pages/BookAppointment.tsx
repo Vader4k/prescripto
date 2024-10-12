@@ -47,26 +47,35 @@ const BookAppointment: React.FC = () => {
   ];
 
   const getDatesOfWeek = () => {
-    // Initialize an empty array to hold the dates of the week
     const dates = [];
-    // Get the current date
     const today = new Date();
+    const months = [
+      "January",
+      "February",
+      "March",
+      "April",
+      "May",
+      "June",
+      "July",
+      "August",
+      "September",
+      "October",
+      "November",
+      "December",
+    ];
 
-    // Loop through the next 7 days (including today)
     for (let i = 0; i < 7; i++) {
-      // Create a new date object for each day
       const date = new Date(today);
-      // Set the date to today plus the loop index (i)
       date.setDate(today.getDate() + i);
 
-      // Push an object containing the full date, day name, and date number into the dates array
       dates.push({
-        fullDate: date.toISOString().split("T")[0], // Convert date to string format (yyyy-mm-dd)
-        day: daysOfTheWeek[date.getDay()], // Get the name of the day (e.g., "Mon", "Tue")
-        date: date.getDate(), // Get the numeric date (e.g., 1, 2, 3)
+        date: `${date.getDate()}, ${
+          months[date.getMonth()]
+        }, ${date.getFullYear()}`,
+        day: daysOfTheWeek[date.getDay()],
       });
     }
-    // Return the array of dates for the week
+
     return dates;
   };
 
@@ -152,18 +161,16 @@ const BookAppointment: React.FC = () => {
               {weekDays.map((dayInfo, index) => (
                 <button
                   disabled={loading}
-                  onClick={() => {
-                    setSelectedDay(dayInfo.fullDate);
-                  }}
+                  onClick={() => setSelectedDay(dayInfo.date)}
                   className={`flex flex-col items-center gap-4 p-4 rounded-[50px] border hover:bg-primary/50 hover:text-white transition-all ${
-                    selectedDay === dayInfo.fullDate
+                    selectedDay === dayInfo.date
                       ? "bg-primary text-white"
                       : "bg-white"
                   }`}
                   key={index}
                 >
-                  <span className="font-medium uppercase">{dayInfo.day}</span>
-                  <span className="text-sm">{dayInfo.date}</span>
+                  <span className="uppercase ">{dayInfo.day}</span>
+                  <span className="text-sm">{dayInfo.date.slice(0,2)}</span>
                 </button>
               ))}
             </div>

@@ -208,7 +208,9 @@ export const bookAppointment = async (req, res) => {
       docId,
     });
 
-    if (existingAppointment) {
+    console.log(existingAppointment);
+
+    if (existingAppointment && existingAppointment.cancelled == false) {
       return res.status(400).json({
         success: false,
         message: "Appointment slot is already booked",
@@ -295,18 +297,14 @@ export const listOfAppointments = async (req, res) => {
     }
 
     if (appointmentArr.length <= 0) {
-      return res
-        .status(400)
-        .json({
-          success: false,
-          message: "You have not booked any appointment",
-        });
+      return res.status(400).json({
+        success: false,
+        message: "You have not booked any appointment",
+      });
     }
 
     // Respond with the fetched appointment
-    return res
-      .status(200)
-      .json({ success: true, data: appointmentArr });
+    return res.status(200).json({ success: true, data: appointmentArr });
   } catch (error) {
     return res.status(500).json({
       success: false,
@@ -314,4 +312,44 @@ export const listOfAppointments = async (req, res) => {
       error: error.message,
     });
   }
+};
+
+//api to cancel appointment
+export const cancelAppointment = async (req, res) => {
+  try {
+    const { id } = req.user;
+    const { appId } = req.body;
+
+    const appointmentData = await Appointment.findById(appId);
+
+    if (!appointmentData) {
+      return res
+        .status(400)
+        .json({ success: false, message: "Appointment not found" });
+    }
+
+    //verify owner of appointment
+    if (appointmentData.userId !== id) {
+      return res
+        .status(400)
+        .json({ success: false, message: "Unauthorized action" });
+    }
+
+    appointmentData.cancelled = true;
+    await appointmentData.save();
+
+    res.status(200).json({ success: true, message: "Appointment cancelled" });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: "something went wrong",
+      error: error.message,
+    });
+  }
+};
+
+//api to make payment with paystack
+export const makePayment = async (req, res) => {
+  try {
+  } catch (error) {}
 };

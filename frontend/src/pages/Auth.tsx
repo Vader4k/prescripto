@@ -36,7 +36,7 @@ const Auth: React.FC = () => {
     if (formType === "register") {
       try {
         const res = await axios.post(`${baseUrl}/api/user/register`, data);
-        if (res.data.sucess) {
+        if (res.data.success) {
           setToken(res.data.token);
           localStorage.setItem("token", res.data.token);
           toast.success(res.data.message);
@@ -106,11 +106,11 @@ const Auth: React.FC = () => {
                 placeholder="John Doe"
                 type="text"
                 id="fullname"
-                {...register("fullname")}
+                {...register("name")}
               />
-              {errors.fullname && (
+              {errors.name && (
                 <p className="text-sm text-red-500" role="alert">
-                  {errors.fullname.message}
+                  {errors.name.message}
                 </p>
               )}
             </div>
