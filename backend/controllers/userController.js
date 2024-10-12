@@ -206,7 +206,6 @@ export const bookAppointment = async (req, res) => {
       slotDate,
       slotTime,
       docId,
-      userId: id,
     });
 
     if (existingAppointment) {
