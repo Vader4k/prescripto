@@ -196,97 +196,69 @@ export const bookAppointment = async (req, res) => {
     const { id } = req.user; // Get the user's ID from the request
     const { docId, slotDate, slotTime } = req.body; // Get doctor ID, date, and time from the request body
 
-    // Find the doctor by ID and exclude the password field
-    const docData = await Doctor.findById(docId).select("-password");
-    if (!docData) {
-      // If no doctor is found, return an error
-      return res
-        .status(401)
-        .json({ success: false, message: "No doctor found" });
-    }
-    if (!docData.availability) {
-      // If the doctor is not available, return an error
-      return res
-        .status(401)
-        .json({ success: false, message: "Doctor not available" });
-    }
-
-    // Check if a date is provided
-    if (!slotDate) {
+    if (!id || !docId || !slotDate || !slotTime) {
       return res
         .status(400)
-        .json({
-          success: false,
-          message: "you must pick a date for appointment",
-        });
+        .json({ success: false, message: "All fields are required" });
     }
 
-    // Check if a time is provided
-    if (!slotTime) {
+    const existingAppointment = await Appointment.findOne({
+      slotDate,
+      slotTime,
+      docId,
+      userId: id,
+    });
+
+    if (existingAppointment) {
+      return res.status(400).json({
+        success: false,
+        message: "Appointment slot is already booked",
+      });
+    }
+
+    // Find the doctor and user data from the database
+    const doctor = await Doctor.findById(docId).select("-password");
+    const user = await User.findById(id).select("-password");
+
+    if (!doctor) {
       return res
-        .status(400)
-        .json({
-          success: false,
-          message: "you must pick a time for appointment",
-        });
+        .status(404)
+        .json({ success: false, message: "Doctor not found" });
     }
 
-    let slots_booked = docData.slots_booked; // Get the booked slots for the doctor
-    // Check if the slot has been booked on the selected date
-    if (slots_booked[slotDate]) {
-      if (slots_booked[slotDate].includes(slotTime)) {
-        // If the slot is already booked, return an error
-        return res
-          .status(400)
-          .json({ success: false, message: "Slot not available" });
-      } else {
-        // If the slot is available, add it to the booked slots
-        slots_booked[slotDate].push(slotTime);
-      }
-    } else {
-      // If no slots are booked for that date, initialize the array and add the slot
-      slots_booked[slotDate] = [];
-      slots_booked[slotDate].push(slotTime);
+    if (!user) {
+      return res
+        .status(404)
+        .json({ success: false, message: "User not found" });
     }
 
-    // Find the user by ID and exclude the password field
-    const userData = await User.findById(id).select("-password");
-    if (!userData) {
-      // If no user is found, return an error
-      return res.status(400).json({ success: false, message: "No user found" });
-    }
-
-    delete docData.slots_booked; // Remove the booked slots from the doctor data
-
-    // Prepare the appointment data
     const appointmentData = {
-      id, // User ID
-      docId, // Doctor ID
-      userData, // User data
-      docData, // Doctor data
-      amount: docData.fee, // Doctor's fee
-      slotTime, // Selected time
-      slotDate, // Selected date
-      Date: Date.now(), // Current date and time
+      userId: id,
+      docId,
+      slotDate,
+      slotTime,
+      userData: user,
+      docData: doctor,
+      amount: doctor.fees, // Assuming the doctor has a fees property
+      date: Date.now(), // Timestamp of when the appointment was created
     };
-
-    // Create a new appointment instance
+    // Create and save the new appointment
     const newAppointment = new Appointment(appointmentData);
-
-    // Save the new appointment to the database
     await newAppointment.save();
 
-    // Update the doctor's booked slots in the database
-    await Doctor.findByIdAndUpdate(docId, { slots_booked });
-
-    // Respond with a success message
-    res.status(200).json({ success: true, message: "Appointment booked" });
-  } catch (error) {
-    console.log(error); // Log any errors
-    res.status(500).json({
-      success: false,
-      message: "Something went wrong",
-      error: error.message, // Return the error message
+    // Return success response
+    res.status(201).json({
+      success: true,
+      message: "Appointment booked successfully",
+      appointment: newAppointment,
     });
+  } catch {
+    return res
+      .status(500)
+      .json({
+        success: false,
+        message: "something went wrong",
+        error: error.message,
+      });
   }
 };

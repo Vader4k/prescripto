@@ -40,6 +40,7 @@ type UserContextType = {
   baseUrl: string;
   userData: IUserData; // Changed to reflect that userData is an object, not an array
   getUserData: () => void
+  getDoctors : () => void
 };
 
 export const UserContext = createContext<UserContextType | null>(null);
@@ -120,7 +121,8 @@ export const UserProvider = ({ children }: { children: React.ReactNode }) => {
     setToken,
     baseUrl,
     userData: userData || null,
-    getUserData
+    getUserData,
+    getDoctors
   };
 
   return <UserContext.Provider value={value}>{children}</UserContext.Provider>;
