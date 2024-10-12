@@ -246,15 +246,23 @@ export const bookAppointment = async (req, res) => {
     await newAppointment.save();
 
     //update the doctors slots_booked
-    const updatedSlots = [...doctor.slots_booked, {slotDate, slotTime}];
+    const updatedSlots = [...doctor.slots_booked, { slotDate, slotTime }];
 
-    await Doctor.findByIdAndUpdate(docId, {slots_booked: updatedSlots}, {new: true});
+    await Doctor.findByIdAndUpdate(
+      docId,
+      { slots_booked: updatedSlots },
+      { new: true }
+    );
 
     //update the user's appointment array
     const updatedAppointment = [...user.appointments, newAppointment._id];
 
     //save the updated user data with the new appointment
-    await User.findByIdAndUpdate(id, {appointments: updatedAppointment}, {new: true});
+    await User.findByIdAndUpdate(
+      id,
+      { appointments: updatedAppointment },
+      { new: true }
+    );
 
     // Return success response
     res.status(201).json({
@@ -262,13 +270,48 @@ export const bookAppointment = async (req, res) => {
       message: "Appointment booked successfully",
       appointment: newAppointment,
     });
-  } catch (error) { // Added error parameter
+  } catch (error) {
+    // Added error parameter
+    return res.status(500).json({
+      success: false,
+      message: "something went wrong",
+      error: error.message,
+    });
+  }
+};
+
+//api to get list of appointments
+export const listOfAppointments = async (req, res) => {
+  try {
+    const { id } = req.user; // Assuming this gets the logged-in user's ID
+    const appointmentArr = await Appointment.find({ userId: id });
+
+    // Find the user by ID
+    const user = await User.findById(id);
+    if (!user) {
+      return res
+        .status(400)
+        .json({ success: false, message: "User does not exist" });
+    }
+
+    if (appointmentArr.length <= 0) {
+      return res
+        .status(400)
+        .json({
+          success: false,
+          message: "You have not booked any appointment",
+        });
+    }
+
+    // Respond with the fetched appointment
     return res
-      .status(500)
-      .json({
-        success: false,
-        message: "something went wrong",
-        error: error.message,
-      });
+      .status(200)
+      .json({ success: true, appointments: appointmentArr });
+  } catch (error) {
+    return res.status(500).json({
+      success: false,
+      message: "Something went wrong",
+      error: error.message,
+    });
   }
 };
