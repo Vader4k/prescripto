@@ -348,8 +348,32 @@ export const cancelAppointment = async (req, res) => {
   }
 };
 
-//api to make payment with paystack
+//api to make payment without a gateway for now
 export const makePayment = async (req, res) => {
   try {
-  } catch (error) {}
+    const { id } = req.user
+    const { appId } = req.body
+
+    const appointment = await Appointment.findById(appId)
+    if(!appointment){
+      return res.status(400).json({success: false, message: "Appoint not found"})
+    }
+
+    if(appointment.userId !== id){
+      return res
+        .status(400)
+        .json({ success: false, message: "Unauthorized action" });
+    }
+
+    appointment.payment = true;
+    await appointment.save()
+    res.status(200).json({success: true, message: "Payment successful"})
+  
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: "something went wrong",
+      error: error.message,
+    });
+  }
 };

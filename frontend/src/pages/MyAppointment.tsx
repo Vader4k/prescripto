@@ -82,6 +82,25 @@ const MyAppointment = () => {
     }
   };
 
+  const payment = async (appId: string) => {
+    try {
+      const res = await axios.post(
+        `${baseUrl}/api/user/pay`,
+        { appId },
+        { headers: { token } }
+      );
+      if (res.data.success) {
+        toast.success(res.data.message);
+      } else {
+        toast.error(res.data.message);
+      }
+    } catch (error) {
+      if (axios.isAxiosError(error)) {
+        toast.error(error.response?.data.message);
+      }
+    }
+  };
+
   useEffect(() => {
     if (token) {
       getUserAppointments();
@@ -125,14 +144,27 @@ const MyAppointment = () => {
                 </div>
               </div>
             </div>
-            {!item.cancelled ? (
-              <div className="flex flex-col gap-2">
+            <div className="flex flex-col gap-2">
+              {!item.cancelled && !item.payment && (
                 <button
                   type="button"
+                  onClick={() => payment(item._id)}
                   className="px-8 py-2 text-sm font-medium transition-all border rounded-md hover:bg-primary hover:text-white"
                 >
                   Pay online
                 </button>
+              )}
+              {!item.cancelled && item.payment && (
+                <button className="px-8 py-2 text-sm font-medium transition-all border rounded-md text-primary ">
+                  Paid
+                </button>
+              )}
+              {item.cancelled && (
+                <button className="px-8 py-2 text-sm font-medium text-red-500 transition-all border border-red-500 rounded-md ">
+                  Appointment Cancelled
+                </button>
+              )}
+              {!item.cancelled && !item.payment && (
                 <button
                   onClick={() => cancelAppointment(item._id)}
                   type="button"
@@ -140,12 +172,8 @@ const MyAppointment = () => {
                 >
                   Cancel appointment
                 </button>
-              </div>
-            ) : (
-              <button className="px-8 py-2 text-sm font-medium text-red-500 transition-all border border-red-500 rounded-md ">
-                Appointment Cancelled
-              </button>
-            )}
+              )}
+            </div>
           </div>
         ))}
       </div>
