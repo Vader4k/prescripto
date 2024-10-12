@@ -1,27 +1,86 @@
+import { useState, useEffect, useCallback } from "react";
 import { useUserContext } from "../hooks/useUserContext";
+import axios from "axios";
+import { toast } from "react-toastify";
+
+interface IAppointment {
+  _id: string;
+  userId: string;
+  docId: string;
+  slotDate: string;
+  slotTime: string;
+  amount: number;
+  cancelled: boolean;
+  date: number;
+  docData: {
+    _id: string;
+    name: string;
+    email: string;
+    image: string;
+    speciality: string;
+    address: {
+      line1: string;
+      line2: string;
+    };
+  };
+  userData: {
+    _id: string;
+    name: string;
+    email: string;
+    image: string;
+    phone: string;
+  };
+  isCompleted: boolean;
+  payment: boolean;
+}
 
 const MyAppointment = () => {
-  const { doctors } = useUserContext();
+  const { baseUrl, token } = useUserContext();
+  
+  const [appointments, setAppointments] = useState<IAppointment[]>([]) 
+
+  const getUserAppointments = useCallback(async () => {
+    try {
+      const res = await axios.get(`${baseUrl}/api/user/appointments`, {headers: {token}})
+      if(!res.data.success){
+        toast.error(res.data.message)
+      } else {
+        setAppointments(res.data.data.reverse())
+        console.log(res.data.data)
+      }
+    } catch (error) {
+      if(axios.isAxiosError(error)){
+        toast.error(error.response?.data.message)
+      }
+      console.log(error)
+    }
+  }, [baseUrl, token])
+
+  useEffect(() => {
+    if(token){
+      getUserAppointments()
+    }
+  }, [token, getUserAppointments])
 
   return (
     <section>
       <h2 className="pb-3 mt-12 font-medium border-b text-zinc-700">My Appointments</h2>
       <div>
-        {doctors.slice(0, 3).map((item) => (
+        {appointments.map((item) => (
           <div className="flex flex-col justify-between gap-3 py-2 border-b md:flex-row md:items-end" key={item._id}>
             <div className="flex items-start gap-6">
-              <img className="w-32 bg-indigo-50" src={item.image} alt={item.name + "image"} />
+              <img className="w-32 bg-indigo-50" src={item.docData.image} alt={item.docData.name + "image"} />
               <div>
-                <p className="font-semibold text-neutral-800">{item.name}</p>
-                <p className="text-[0.9rem]">{item.speciality}</p>
+                <p className="font-semibold text-neutral-800">{item.docData.name}</p>
+                <p className="text-[0.9rem]">{item.docData.speciality}</p>
                 <p className="mt-1 font-medium text-zinc-700">Address:</p>
                 <div className="py-1 text-xs">
-                  <p>{item.address.line1}</p>
-                  <p>{item.address.line2}</p>
+                  <p>{item.docData.address.line1}</p>
+                  <p>{item.docData.address.line2}</p>
                 </div>
                 <div className="flex gap-2 mt-1 text-sm">
                   <span className="font-medium text-neutral-700">Date & Time:</span>
-                  <span>25, July, 2024 | 8:30PM</span>
+                  <span>{item.slotDate} | {item.slotTime}</span>
                 </div>
               </div>
             </div>

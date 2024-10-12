@@ -49,30 +49,24 @@ const BookAppointment: React.FC = () => {
   const getDatesOfWeek = () => {
     // Initialize an empty array to hold the dates of the week
     const dates = [];
-    
-    // Create a new Date object representing the current date
+    // Get the current date
     const today = new Date();
-    
-    // Loop through the next 7 days (0 to 6)
+
+    // Loop through the next 7 days (including today)
     for (let i = 0; i < 7; i++) {
-      // Create a new Date object for each day in the loop
+      // Create a new date object for each day
       const date = new Date(today);
-      
       // Set the date to today plus the loop index (i)
-      // This effectively gives us today, tomorrow, and the next 5 days
       date.setDate(today.getDate() + i);
-      
-      // Push an object containing the date and the corresponding day name into the dates array
+
+      // Push an object containing the full date, day name, and date number into the dates array
       dates.push({
-        // Get the day of the month (1-31) from the date object
-        date: date.getDate(),
-        // Get the name of the day (e.g., "Sun", "Mon") using the getDay() method
-        // getDay() returns a number (0-6) corresponding to the day of the week
-        day: daysOfTheWeek[date.getDay()],
+        fullDate: date.toISOString().split("T")[0], // Convert date to string format (yyyy-mm-dd)
+        day: daysOfTheWeek[date.getDay()], // Get the name of the day (e.g., "Mon", "Tue")
+        date: date.getDate(), // Get the numeric date (e.g., 1, 2, 3)
       });
     }
-    
-    // Return the array of date objects, each containing a date and its corresponding day name
+    // Return the array of dates for the week
     return dates;
   };
 
@@ -82,6 +76,10 @@ const BookAppointment: React.FC = () => {
     if (!token) {
       toast.warn("Login to book appointment");
       return navigate("/auth");
+    }
+    if (!selectedDay || !selectedTime) {
+      toast.warn("Please select a date and time");
+      return;
     }
     try {
       setLoading(true);
@@ -99,17 +97,17 @@ const BookAppointment: React.FC = () => {
       }
       toast.success(res.data.message);
       setLoading(false);
-      navigate('/my-appointments')
+      navigate("/my-appointments");
       getDoctors();
-      setSelectedDay('')
-      setSelectedTime('')
+      setSelectedDay("");
+      setSelectedTime("");
     } catch (error) {
       setLoading(false);
       if (axios.isAxiosError(error)) {
         toast.error(error.response?.data.message);
       } else {
         console.log(error);
-        toast.error("something went wrong");
+        toast.error("Something went wrong");
       }
     }
   };
@@ -155,10 +153,10 @@ const BookAppointment: React.FC = () => {
                 <button
                   disabled={loading}
                   onClick={() => {
-                    setSelectedDay(dayInfo.day);
+                    setSelectedDay(dayInfo.fullDate);
                   }}
                   className={`flex flex-col items-center gap-4 p-4 rounded-[50px] border hover:bg-primary/50 hover:text-white transition-all ${
-                    selectedDay === dayInfo.day
+                    selectedDay === dayInfo.fullDate
                       ? "bg-primary text-white"
                       : "bg-white"
                   }`}

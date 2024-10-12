@@ -16,7 +16,7 @@ const Footer = () => {
             </p>
           </div>
           <div className="flex flex-col gap-6">
-            <h2 className="text-2xl font-medium uppercase">Company</h2>
+            <h2 className="text-xl font-medium uppercase">Company</h2>
             <ul className="flex flex-col gap-4 pl-2 text-sm font-extralight">
               <li>
                 <a href="/">Home</a>
@@ -33,7 +33,7 @@ const Footer = () => {
             </ul>
           </div>
           <div className="flex flex-col gap-6">
-            <h2 className="text-2xl font-medium uppercase">Get in touch</h2>
+            <h2 className="text-xl font-medium uppercase">Get in touch</h2>
             <p>+1-212-456-7890</p>
             <p>kingdanny295@gmail.com</p>
           </div>

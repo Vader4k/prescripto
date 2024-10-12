@@ -306,7 +306,7 @@ export const listOfAppointments = async (req, res) => {
     // Respond with the fetched appointment
     return res
       .status(200)
-      .json({ success: true, appointments: appointmentArr });
+      .json({ success: true, data: appointmentArr });
   } catch (error) {
     return res.status(500).json({
       success: false,
