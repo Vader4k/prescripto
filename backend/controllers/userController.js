@@ -245,13 +245,24 @@ export const bookAppointment = async (req, res) => {
     const newAppointment = new Appointment(appointmentData);
     await newAppointment.save();
 
+    //update the doctors slots_booked
+    const updatedSlots = [...doctor.slots_booked, {slotDate, slotTime}];
+
+    await Doctor.findByIdAndUpdate(docId, {slots_booked: updatedSlots}, {new: true});
+
+    //update the user's appointment array
+    const updatedAppointment = [...user.appointments, newAppointment._id];
+
+    //save the updated user data with the new appointment
+    await User.findByIdAndUpdate(id, {appointments: updatedAppointment}, {new: true});
+
     // Return success response
     res.status(201).json({
       success: true,
       message: "Appointment booked successfully",
       appointment: newAppointment,
     });
-  } catch {
+  } catch (error) { // Added error parameter
     return res
       .status(500)
       .json({
