@@ -5,7 +5,7 @@ type AppContextType = {
 }
 
 export const AppContext = createContext<AppContextType>({
-  calculateAge: (dob: string) => 0
+  calculateAge: () => 0
 });
 
 export const AppProvider = ({ children }: { children: React.ReactNode }) => {

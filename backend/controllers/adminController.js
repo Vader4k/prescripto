@@ -140,3 +140,29 @@ export const getAppointments = async (req, res) => {
     res.status(500).json({success: false, message: "something went wrong", error: error.message})
   }
 }
+
+//api to cancel appointmnents
+export const cancelAppointment = async (req, res) => {
+  try {
+    const { appId } = req.body;
+
+    const appointmentData = await Appointment.findById(appId);
+
+    if (!appointmentData) {
+      return res
+        .status(400)
+        .json({ success: false, message: "Appointment not found" });
+    }
+
+    appointmentData.cancelled = true;
+    await appointmentData.save();
+
+    res.status(200).json({ success: true, message: "Appointment cancelled" });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: "something went wrong",
+      error: error.message,
+    });
+  }
+};
