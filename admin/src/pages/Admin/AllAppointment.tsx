@@ -88,6 +88,9 @@ const AllAppointment: React.FC = () => {
             {item.cancelled && (
               <p className="text-sm text-red-300">Cancelled</p>
             )}
+            {item.payment && (
+              <p className="text-sm text-green-300">Paid</p>
+            )}
           </div>
         ))}
       </div>

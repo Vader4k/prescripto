@@ -3,7 +3,7 @@ import axios from "axios";
 import { toast } from "react-toastify";
 import { IDoctorSchema } from "../pages/Admin/AddDoctor";
 
-interface IAppointment {
+export interface IAppointment {
   _id: string;
   userId: string;
   docId: string;
