@@ -1,10 +1,11 @@
 import Doctor from "../models/doctorModel.js";
+import User from "../models/userModel.js";
 import bcryptjs from "bcryptjs";
 import validator from "validator";
 import { v2 as cloudinary } from "cloudinary";
 import jwt from "jsonwebtoken";
 import dotenv from "dotenv";
-import Appointment from '../models/appointmentModel.js'
+import Appointment from "../models/appointmentModel.js";
 
 dotenv.config();
 
@@ -96,7 +97,9 @@ export const loginAdmin = async (req, res) => {
   try {
     const { email, password } = req.body;
     if (email === adminEmail && password === adminPassword) {
-      const token = jwt.sign({ email, role: 'admin' }, process.env.JWT_SECRET, { expiresIn: '1h' });
+      const token = jwt.sign({ email, role: "admin" }, process.env.JWT_SECRET, {
+        expiresIn: "1h",
+      });
       res.status(200).json({ success: true, token });
     } else {
       res
@@ -104,42 +107,53 @@ export const loginAdmin = async (req, res) => {
         .json({ success: false, message: "Invalid email or password" });
     }
   } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: "Failed to login",
+      error: error.message,
+    });
+  }
+};
+
+//get all doctors
+export const getAllDoctors = async (req, res) => {
+  try {
+    const doctors = await Doctor.find({}).select("-password");
+    if (doctors.length <= 0) {
+      res.status(200).json({ success: false, message: "No doctor found" });
+    }
+    res.json({ success: true, doctors });
+  } catch (error) {
     res
       .status(500)
       .json({
         success: false,
-        message: "Failed to login",
+        message: "something went wrong",
         error: error.message,
       });
   }
 };
 
-
-//get all doctors
-export const getAllDoctors = async (req, res) => {
-  try {
-    const doctors = await Doctor.find({}).select('-password')
-    if(doctors.length <= 0) {
-      res.status(200).json({ success: false, message:"No doctor found" });
-    }
-    res.json({success: true, doctors})
-  } catch (error) {
-    res.status(500).json({success: false, message: "something went wrong" ,error: error.message});
-  }
-}
-
 //api to get all appointments
 export const getAppointments = async (req, res) => {
   try {
-    const data = await Appointment.find({})
-    if(!data){
-      return res.status(400).json({success: false, message: "No Appointment booked yet"})
+    const data = await Appointment.find({});
+    if (!data) {
+      return res
+        .status(400)
+        .json({ success: false, message: "No Appointment booked yet" });
     }
-    res.status(200).json({success: true, data})
+    res.status(200).json({ success: true, data });
   } catch (error) {
-    res.status(500).json({success: false, message: "something went wrong", error: error.message})
+    res
+      .status(500)
+      .json({
+        success: false,
+        message: "something went wrong",
+        error: error.message,
+      });
   }
-}
+};
 
 //api to cancel appointmnents
 export const cancelAppointment = async (req, res) => {
@@ -158,6 +172,30 @@ export const cancelAppointment = async (req, res) => {
     await appointmentData.save();
 
     res.status(200).json({ success: true, message: "Appointment cancelled" });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: "something went wrong",
+      error: error.message,
+    });
+  }
+};
+
+//api to get dashboard data for admin panel
+export const AdminDashboard = async (req, res) => {
+  try {
+    const doctors = await Doctor.find({});
+    const users = await User.find({});
+    const appointments = await Appointment.find({});
+
+    const dashData = {
+      doctors: doctors.length,
+      appointments: appointments.length,
+      patients: users.length,
+      latestAppointments: appointments.reverse().slice(0, 5),
+    };
+
+    res.status(200).json({ success: true, dashData });
   } catch (error) {
     res.status(500).json({
       success: false,

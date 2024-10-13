@@ -36,6 +36,13 @@ interface IAppointment {
   payment: boolean;
 }
 
+interface IDashData {
+  doctors: number,
+  appointments: number,
+  patients: number,
+  latestAppointments: IAppointment[]
+}
+
 export const AdminContext = createContext<{
   aToken: string | null;
   setAToken: (token: string) => void;
@@ -44,6 +51,8 @@ export const AdminContext = createContext<{
   changeAvailability: (docId: string) => Promise<void>;
   getAllAppointments: () => Promise<void>; // Return type fixed to Promise<void>
   appointments: IAppointment[]; // Properly typed as IAppointment[]
+  dashboardData: IDashData;
+  getDashboardData : () => Promise<void>
 }>({
   aToken: null,
   setAToken: () => {},
@@ -52,6 +61,13 @@ export const AdminContext = createContext<{
   changeAvailability: async () => {},
   getAllAppointments: async () => {},
   appointments: [], // Correct initial value and type
+  dashboardData: {
+    doctors: 0,
+    appointments: 0,
+    patients: 0,
+    latestAppointments: [],
+  },
+  getDashboardData: async() => {}
 });
 
 export const AdminProvider = ({ children }: { children: React.ReactNode }) => {
@@ -60,6 +76,7 @@ export const AdminProvider = ({ children }: { children: React.ReactNode }) => {
   );
   const [doctors, setDoctors] = useState<IDoctorSchema[]>([]); // Properly typed state
   const [appointments, setAppointments] = useState<IAppointment[]>([]); // Properly typed state
+  const [dashboardData, setDashboardData] = useState<IDashData | null>(null)
   const baseUrl = import.meta.env.VITE_API_URL;
 
   const fetchDoctors = useCallback(async () => {
@@ -128,6 +145,21 @@ export const AdminProvider = ({ children }: { children: React.ReactNode }) => {
     }
   }, [aToken, baseUrl]);
 
+  const getDashboardData = useCallback(async() => {
+    try {
+      const res = await axios.get(`${baseUrl}/api/admin/dashboard`, {headers: {aToken}})
+      if(res.data.success){
+        setDashboardData(res.data.dashData)
+      }
+    } catch (error) {
+      if(axios.isAxiosError(error)){
+        toast.error(error.response?.data.message)
+      }else{
+        toast.error("something went wrong")
+      }
+    }
+  }, [aToken, baseUrl])
+
   useEffect(() => {
     if (aToken) {
       fetchDoctors();
@@ -142,6 +174,8 @@ export const AdminProvider = ({ children }: { children: React.ReactNode }) => {
     changeAvailability,
     getAllAppointments,
     appointments,
+    dashboardData,
+    getDashboardData
   };
 
   return (

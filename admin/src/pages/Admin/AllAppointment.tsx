@@ -85,6 +85,9 @@ const AllAppointment: React.FC = () => {
                 />
               </button>
             )}
+            {item.cancelled && (
+              <p className="text-sm text-red-300">Cancelled</p>
+            )}
           </div>
         ))}
       </div>
