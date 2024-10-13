@@ -3,34 +3,66 @@ import axios from "axios";
 import { toast } from "react-toastify";
 import { IDoctorSchema } from "../pages/Admin/AddDoctor";
 
+interface IAppointment {
+  _id: string;
+  userId: string;
+  docId: string;
+  slotDate: string;
+  slotTime: string;
+  amount: number;
+  cancelled: boolean;
+  date: number;
+  docData: {
+    _id: string;
+    name: string;
+    email: string;
+    image: string;
+    speciality: string;
+    fees: number;
+    address: {
+      line1: string;
+      line2: string;
+    };
+  };
+  userData: {
+    _id: string;
+    name: string;
+    email: string;
+    image: string;
+    phone: string;
+    dob: string;
+  };
+  isCompleted: boolean;
+  payment: boolean;
+}
+
 export const AdminContext = createContext<{
   aToken: string | null;
-  setAToken: (token: string) => void; // Updated type for setAToken
+  setAToken: (token: string) => void;
   baseUrl: string;
   doctors: IDoctorSchema[];
-  changeAvailability: (docId: string) => Promise<void>; // Updated type definition
-  getAllAppointments: () => void;
-  appointments: []
+  changeAvailability: (docId: string) => Promise<void>;
+  getAllAppointments: () => Promise<void>; // Return type fixed to Promise<void>
+  appointments: IAppointment[]; // Properly typed as IAppointment[]
 }>({
   aToken: null,
   setAToken: () => {},
   baseUrl: "",
   doctors: [],
   changeAvailability: async () => {},
-  getAllAppointments: ():void => {},
-  appointments: []
+  getAllAppointments: async () => {},
+  appointments: [], // Correct initial value and type
 });
 
 export const AdminProvider = ({ children }: { children: React.ReactNode }) => {
   const [aToken, setAToken] = useState<string>(
     localStorage.getItem("aToken") || ""
   );
-  const [doctors, setDoctors] = useState<[]>([]);
-  const [appointments, setAppointments] = useState<[]>([])
+  const [doctors, setDoctors] = useState<IDoctorSchema[]>([]); // Properly typed state
+  const [appointments, setAppointments] = useState<IAppointment[]>([]); // Properly typed state
   const baseUrl = import.meta.env.VITE_API_URL;
 
   const fetchDoctors = useCallback(async () => {
-    // Wrapped in useCallback
     try {
       const result = await axios.get(`${baseUrl}/api/admin/all-doctors`, {
         headers: {
@@ -48,8 +80,7 @@ export const AdminProvider = ({ children }: { children: React.ReactNode }) => {
         toast.error("An unexpected error occurred");
       }
     }
-  }, [aToken, baseUrl]); // Added dependencies for useCallback
-
+  }, [aToken, baseUrl]);
 
   const changeAvailability = async (docId: string) => {
     try {
@@ -57,7 +88,6 @@ export const AdminProvider = ({ children }: { children: React.ReactNode }) => {
         `${baseUrl}/api/admin/change-availability`,
         { docId },
         {
-          // Wrapped docId in an object
           headers: {
             aToken,
           },
@@ -65,7 +95,7 @@ export const AdminProvider = ({ children }: { children: React.ReactNode }) => {
       );
       if (res.data.success) {
         toast.success(res.data.message);
-        fetchDoctors(); // Fetch updated doctors after changing availability
+        fetchDoctors();
       } else {
         toast.error(res.data.message);
       }
@@ -81,23 +111,22 @@ export const AdminProvider = ({ children }: { children: React.ReactNode }) => {
   const getAllAppointments = useCallback(async () => {
     try {
       const res = await axios.get(`${baseUrl}/api/admin/appointments`, {
-        headers: {aToken}
-      })
-      if(res.data.success){
-        setAppointments(res.data.data)
+        headers: { aToken },
+      });
+      if (res.data.success) {
+        setAppointments(res.data.data);
       } else {
-        toast.error(res.data.message)
+        toast.error(res.data.message);
       }
     } catch (error) {
-      if(axios.isAxiosError(error)){
-        toast.error(error.response?.data.message
-        )
+      if (axios.isAxiosError(error)) {
+        toast.error(error.response?.data.message);
       } else {
-        console.log(error)
-        toast.error("An unexpected error occured")
+        console.log(error);
+        toast.error("An unexpected error occurred");
       }
     }
-  }, [aToken, baseUrl])
+  }, [aToken, baseUrl]);
 
   useEffect(() => {
     if (aToken) {
@@ -105,7 +134,15 @@ export const AdminProvider = ({ children }: { children: React.ReactNode }) => {
     }
   }, [aToken, fetchDoctors]);
 
-  const value = { aToken, setAToken, baseUrl, doctors, changeAvailability, getAllAppointments, appointments };
+  const value = {
+    aToken,
+    setAToken,
+    baseUrl,
+    doctors,
+    changeAvailability,
+    getAllAppointments,
+    appointments,
+  };
 
   return (
     <AdminContext.Provider value={value}>{children}</AdminContext.Provider>

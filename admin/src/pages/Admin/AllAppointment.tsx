@@ -1,6 +1,7 @@
 import { useEffect } from "react";
 import { useAdminContext } from "../../hooks/useAllContext";
 import { useAppContext } from "../../hooks/useAllContext";
+import { assets } from "../../assets/assets";
 
 const AllAppointment: React.FC = () => {
   const { aToken, getAllAppointments, appointments } = useAdminContext();
@@ -12,10 +13,7 @@ const AllAppointment: React.FC = () => {
     }
   }, [aToken, getAllAppointments]);
 
-  console.log(appointments);
 
-  const actionAppointments = appointments.filter((app)=> app.cancelled == false && app.isCompleted == false && app.payment == false)
-  
   return (
     <div className="w-full max-w-6xl m-5">
       <h1 className="mb-3 text-lg font-medium">All Appointments</h1>
@@ -30,9 +28,9 @@ const AllAppointment: React.FC = () => {
           <p>Actions</p>
         </div>
 
-        {actionAppointments.map((item, i) => (
+        {appointments.map((item, i) => (
           <div
-            className="flex flex-wrap justify-between max-sm:gap-2 sm:grid sm:grid-cols-[0.5fr_3fr_1fr_3fr_3fr_1fr_1fr] items-center text-gray-500  py-3 px-6 border-b hover:bg-gray-200"
+            className="flex flex-wrap justify-between max-sm:gap-2 sm:grid sm:grid-cols-[0.5fr_3fr_1fr_3fr_3fr_1fr_1fr] items-center text-gray-500  py-3 px-6 border-b hover:bg-gray-200 transition-all"
             key={item._id}
           >
             <p className="max-sm:hidden">{i + 1}</p>
@@ -44,8 +42,12 @@ const AllAppointment: React.FC = () => {
               />
               <p className="capitalize">{item.userData.name}</p>
             </div>
-            <p className="max-sm:hidden">{calculateAge(item.userData.dob.toString())}</p>
-            <p>{item.slotDate}, {item.slotTime}</p>
+            <p className="max-sm:hidden">
+              {calculateAge(item.userData.dob.toString())}
+            </p>
+            <p>
+              {item.slotDate}, {item.slotTime}
+            </p>
             <div className="flex items-center gap-2">
               <img
                 className="bg-gray-200 rounded-full size-8"
@@ -55,6 +57,15 @@ const AllAppointment: React.FC = () => {
               <p className="capitalize">{item.docData.name}</p>
             </div>
             <p>${item.docData.fees}</p>
+            {item.cancelled == false && item.payment == false && item.isCompleted == false && (
+              <button>
+                <img
+                  className="w-10"
+                  src={assets.cancel_icon}
+                  alt="cancel_icon"
+                />
+              </button>
+            )}
           </div>
         ))}
       </div>
