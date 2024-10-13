@@ -38,3 +38,16 @@ export const doctorList = async (req, res) => {
     });
   }
 };
+
+//api for doctor login
+export const loginDoctor = async (req, res) => {
+  try {
+    
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: "something went wrong",
+      error: error.message,
+    });
+  }
+}
