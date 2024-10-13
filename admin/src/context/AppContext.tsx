@@ -1,9 +1,26 @@
 import { createContext } from "react";
 
-export const AppContext = createContext();
+type AppContextType = {
+  calculateAge: (dob: string) => number;
+}
+
+export const AppContext = createContext<AppContextType>({
+  calculateAge: (dob: string) => 0
+});
 
 export const AppProvider = ({ children }: { children: React.ReactNode }) => {
-  const value = {};
+
+  const calculateAge = (dob: string) => {
+    const today = new Date()
+    const birthDate = new Date(dob)
+
+    const age = today.getFullYear() - birthDate.getFullYear()
+    return age
+  }
+
+  const value = {
+    calculateAge
+  };
 
   return <AppContext.Provider value={value}>{children}</AppContext.Provider>;
 };

@@ -9,12 +9,16 @@ export const AdminContext = createContext<{
   baseUrl: string;
   doctors: IDoctorSchema[];
   changeAvailability: (docId: string) => Promise<void>; // Updated type definition
+  getAllAppointments: () => void;
+  appointments: []
 }>({
   aToken: null,
   setAToken: () => {},
   baseUrl: "",
   doctors: [],
   changeAvailability: async () => {},
+  getAllAppointments: ():void => {},
+  appointments: []
 });
 
 export const AdminProvider = ({ children }: { children: React.ReactNode }) => {
@@ -22,6 +26,7 @@ export const AdminProvider = ({ children }: { children: React.ReactNode }) => {
     localStorage.getItem("aToken") || ""
   );
   const [doctors, setDoctors] = useState<[]>([]);
+  const [appointments, setAppointments] = useState<[]>([])
   const baseUrl = import.meta.env.VITE_API_URL;
 
   const fetchDoctors = useCallback(async () => {
@@ -45,11 +50,6 @@ export const AdminProvider = ({ children }: { children: React.ReactNode }) => {
     }
   }, [aToken, baseUrl]); // Added dependencies for useCallback
 
-  useEffect(() => {
-    if (aToken) {
-      fetchDoctors();
-    }
-  }, [aToken, fetchDoctors]); // Now fetchDoctors is stable and can be added here
 
   const changeAvailability = async (docId: string) => {
     try {
@@ -78,7 +78,34 @@ export const AdminProvider = ({ children }: { children: React.ReactNode }) => {
     }
   };
 
-  const value = { aToken, setAToken, baseUrl, doctors, changeAvailability };
+  const getAllAppointments = useCallback(async () => {
+    try {
+      const res = await axios.get(`${baseUrl}/api/admin/appointments`, {
+        headers: {aToken}
+      })
+      if(res.data.success){
+        setAppointments(res.data.data)
+      } else {
+        toast.error(res.data.message)
+      }
+    } catch (error) {
+      if(axios.isAxiosError(error)){
+        toast.error(error.response?.data.message
+        )
+      } else {
+        console.log(error)
+        toast.error("An unexpected error occured")
+      }
+    }
+  }, [aToken, baseUrl])
+
+  useEffect(() => {
+    if (aToken) {
+      fetchDoctors();
+    }
+  }, [aToken, fetchDoctors]);
+
+  const value = { aToken, setAToken, baseUrl, doctors, changeAvailability, getAllAppointments, appointments };
 
   return (
     <AdminContext.Provider value={value}>{children}</AdminContext.Provider>

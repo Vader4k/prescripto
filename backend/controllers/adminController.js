@@ -4,6 +4,7 @@ import validator from "validator";
 import { v2 as cloudinary } from "cloudinary";
 import jwt from "jsonwebtoken";
 import dotenv from "dotenv";
+import Appointment from '../models/appointmentModel.js'
 
 dotenv.config();
 
@@ -127,3 +128,15 @@ export const getAllDoctors = async (req, res) => {
   }
 }
 
+//api to get all appointments
+export const getAppointments = async (req, res) => {
+  try {
+    const data = await Appointment.find({})
+    if(!data){
+      return res.status(400).json({success: false, message: "No Appointment booked yet"})
+    }
+    res.status(200).json({success: true, data})
+  } catch (error) {
+    res.status(500).json({success: false, message: "something went wrong", error: error.message})
+  }
+}
