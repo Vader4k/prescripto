@@ -76,7 +76,12 @@ export const AdminProvider = ({ children }: { children: React.ReactNode }) => {
   );
   const [doctors, setDoctors] = useState<IDoctorSchema[]>([]); // Properly typed state
   const [appointments, setAppointments] = useState<IAppointment[]>([]); // Properly typed state
-  const [dashboardData, setDashboardData] = useState<IDashData | null>(null)
+  const [dashboardData, setDashboardData] = useState<IDashData>({
+    doctors: 0,
+    appointments: 0,
+    patients: 0,
+    latestAppointments: [],
+  })
   const baseUrl = import.meta.env.VITE_API_URL;
 
   const fetchDoctors = useCallback(async () => {
