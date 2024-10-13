@@ -30,7 +30,7 @@ const Sidebar = () => {
   const { aToken } = useAdminContext();
 
   return (
-    <div className="min-h-screen bg-white border-r">
+    <div className="h-full min-h-screen bg-white border-r">
       {aToken && (
         <ul className="text-[#515151] mt-5 flex flex-col gap-2">
           {navLinks.map((link) => (

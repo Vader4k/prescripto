@@ -38,23 +38,26 @@ const Profile: React.FC = () => {
     try {
       setLoading(true);
       const formData = new FormData();
-
-      formData.append("name", data.name || "");
-      formData.append("phone", data.phone || "");
-      formData.append("gender", data.gender === "Male" ? "Male" : "Female");
-      formData.append("dob", data.dob || "");
-      formData.append(
-        "address",
-        JSON.stringify({
-          line1: data.address?.line1,
-          line2: data.address?.line2,
-        })
-      );
-
+  
+      // Append fields only if they are available
+      if (data.name) formData.append("name", data.name);
+      if (data.phone) formData.append("phone", data.phone);
+      if (data.gender) formData.append("gender", data.gender === "Male" ? "Male" : "Female");
+      if (data.dob) formData.append("dob", data.dob);
+      if (data.address) {
+        formData.append(
+          "address",
+          JSON.stringify({
+            line1: data.address.line1,
+            line2: data.address.line2,
+          })
+        );
+      }
+  
       if (data.image) {
         formData.append("image", data.image);
       }
-
+  
       const res = await axios.post(
         `${baseUrl}/api/user/update-profile`,
         formData,
@@ -65,22 +68,22 @@ const Profile: React.FC = () => {
           },
         }
       );
+  
       if (res.data.success) {
         toast.success(res.data.message);
         setIsEdit(false);
         getUserData();
-        setLoading(false);
       } else {
         toast.error(res.data.message);
-        setLoading(false);
       }
+      setLoading(false);
     } catch (error) {
       setLoading(false);
       console.log(error);
       if (axios.isAxiosError(error)) {
         toast.error(error.response?.data.message);
       } else {
-        toast.error("An unexpected error occured");
+        toast.error("An unexpected error occurred");
       }
     }
   };
