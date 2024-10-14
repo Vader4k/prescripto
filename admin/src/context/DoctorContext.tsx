@@ -1,5 +1,5 @@
-import { createContext, useCallback, useEffect, useState } from "react";
-import { IAppointment } from "./AdminContext";
+import { createContext, useCallback, useState } from "react";
+import { IAppointment } from './AdminContext';
 import axios from "axios";
 import { toast } from "react-toastify";
 
@@ -8,6 +8,7 @@ interface IDoctorContext {
   setDToken : React.Dispatch<React.SetStateAction<string | null>>,
   baseUrl: string,
   appointments: IAppointment[],
+  getAppointments: () => Promise<void>
 }
 
 export const DoctorContext = createContext<IDoctorContext>({
@@ -15,6 +16,7 @@ export const DoctorContext = createContext<IDoctorContext>({
   setDToken: () => {},
   baseUrl: "",
   appointments: [],
+  getAppointments: async() => {}
 });
 
 export const DoctorProvider = ({ children }: { children: React.ReactNode }) => {
@@ -30,12 +32,11 @@ export const DoctorProvider = ({ children }: { children: React.ReactNode }) => {
           dToken
         }
       })
-
       if(!res.data.success){
-        return toast.error(res.data.message)
+        toast.error(res.data.message)
       } else {
         toast.success(res.data.message)
-        setAppointments(res.data.data)
+        setAppointments(res.data.data.reverse())
       }
     } catch (error) {
       if(axios.isAxiosError(error)){
@@ -46,17 +47,13 @@ export const DoctorProvider = ({ children }: { children: React.ReactNode }) => {
     }
   } ,[baseUrl, dToken])
 
-  useEffect(()=> {
-    if(dToken){
-      getAppointments()
-    }
-  },[dToken, getAppointments])
 
   const value = {
     dToken,
     setDToken,
     baseUrl,
-    appointments
+    appointments,
+    getAppointments
   };
 
   return <DoctorContext.Provider value={value}>{children}</DoctorContext.Provider>;

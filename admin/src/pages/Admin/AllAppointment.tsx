@@ -6,7 +6,8 @@ import axios from "axios";
 import { toast } from "react-toastify";
 
 const AllAppointment: React.FC = () => {
-  const { aToken, getAllAppointments, appointments, baseUrl } = useAdminContext();
+  const { aToken, getAllAppointments, appointments, baseUrl } =
+    useAdminContext();
   const { calculateAge } = useAppContext();
 
   useEffect(() => {
@@ -15,23 +16,27 @@ const AllAppointment: React.FC = () => {
     }
   }, [aToken, getAllAppointments]);
 
-  const cancelAppointment = async(appId:string) => {
+  const cancelAppointment = async (appId: string) => {
     try {
-      const res = await axios.post(`${baseUrl}/api/admin/cancel-appointment`, {appId}, {
-        headers: {aToken}
-      })
-      if(res.data.success){
-        toast.success(res.data.message)
-        getAllAppointments()
+      const res = await axios.post(
+        `${baseUrl}/api/admin/cancel-appointment`,
+        { appId },
+        {
+          headers: { aToken },
+        }
+      );
+      if (res.data.success) {
+        toast.success(res.data.message);
+        getAllAppointments();
       }
     } catch (error) {
-      if(axios.isAxiosError(error)){
-        toast.error(error.response?.data.message)
-      }else {
-        toast.error("Something went wrong")
+      if (axios.isAxiosError(error)) {
+        toast.error(error.response?.data.message);
+      } else {
+        toast.error("Something went wrong");
       }
     }
-  }
+  };
 
   return (
     <div className="w-full max-w-6xl m-5">
@@ -76,21 +81,21 @@ const AllAppointment: React.FC = () => {
               <p className="capitalize">{item.docData.name}</p>
             </div>
             <p>${item.docData.fees}</p>
-            {item.cancelled == false && item.payment == false && item.isCompleted == false && (
-              <button onClick={()=>cancelAppointment(item._id)}>
-                <img
-                  className="w-10"
-                  src={assets.cancel_icon}
-                  alt="cancel_icon"
-                />
-              </button>
-            )}
+            {item.cancelled == false &&
+              item.payment == false &&
+              item.isCompleted == false && (
+                <button onClick={() => cancelAppointment(item._id)}>
+                  <img
+                    className="w-10"
+                    src={assets.cancel_icon}
+                    alt="cancel_icon"
+                  />
+                </button>
+              )}
             {item.cancelled && (
               <p className="text-sm text-red-300">Cancelled</p>
             )}
-            {item.payment && (
-              <p className="text-sm text-green-300">Paid</p>
-            )}
+            {item.payment && <p className="text-sm text-green-300">Paid</p>}
           </div>
         ))}
       </div>

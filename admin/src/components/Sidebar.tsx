@@ -55,7 +55,7 @@ const Sidebar = () => {
           {adminLinks.map((link) => (
             <NavLink className={({isActive}) => `flex items-ceter gap-3 px-3 py-3 md:px-9 md:min-w-72 cursor-pointer ${isActive ? 'bg-[#F2F3FF] border-r-4 border-primary' : ''}`} key={link.to} to={link.to}>
               <img src={link.icon} alt={`${link.label} icon`} />
-              <p>{link.label}</p>
+              <p className="hidden md:block">{link.label}</p>
             </NavLink>
           ))}
         </ul>
@@ -65,7 +65,7 @@ const Sidebar = () => {
         {doctorLinks.map((link) => (
           <NavLink className={({isActive}) => `flex items-ceter gap-3 px-3 py-3 md:px-9 md:min-w-72 cursor-pointer ${isActive ? 'bg-[#F2F3FF] border-r-4 border-primary' : ''}`} key={link.to} to={link.to}>
             <img src={link.icon} alt={`${link.label} icon`} />
-            <p>{link.label}</p>
+            <p className="hidden md:block">{link.label}</p>
           </NavLink>
         ))}
       </ul>

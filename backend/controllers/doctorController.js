@@ -102,25 +102,97 @@ export const getAppointment = async (req, res) => {
     if (!docId) {
       return res
         .status(400)
-        .json({ success: false, message: "Doctor not found" });
+        .json({ success: false, message: "Not Authorized" });
     }
     if (!appointmentData) {
       return res
         .status(400)
-        .json({ success: false, message: "No appointment found" });
+        .json({ success: false, message: "No Appointment Found" });
     }
 
-    res
-      .status(200)
-      .json({
-        success: true,
-        message: "Appointment fetched successfully",
-        data:appointmentData,
-      });
+    res.status(200).json({
+      success: true,
+      message: "Appointment Fetched Successfully",
+      data: appointmentData,
+    });
   } catch (error) {
     res.status(500).json({
       success: false,
-      message: "something went wrong",
+      message: "Something Went Wrong",
+      error: error.message,
+    });
+  }
+};
+
+export const completeAppointment = async (req, res) => {
+  try {
+    const { docId } = req.user;
+    const { appId } = req.body;
+
+    if (!docId) {
+      return res
+        .status(400)
+        .json({ success: false, message: "Not Authorized" });
+    }
+
+    const appointment = await Appointment.findById(appId);
+    // Check if appointment exists
+    if (!appointment) {
+      return res
+        .status(404)
+        .json({ success: false, message: "Appointment not found" });
+    }
+
+    if (appointment.docId !== docId) {
+      return res
+        .status(403)
+        .json({ success: false, message: "Not Allowed" });
+    }
+
+    appointment.isCompleted = true;
+    await appointment.save();
+    res.status(200).json({ success: true, message: "Appointment completed" });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: "Something went wrong",
+      error: error.message,
+    });
+  }
+};
+
+export const cancelAppointment = async (req, res) => {
+  try {
+    const { docId } = req.user;
+    const { appId } = req.body;
+
+    if (!docId) {
+      return res
+        .status(400)
+        .json({ success: false, message: "Not Authorized" });
+    }
+
+    const appointment = await Appointment.findById(appId);
+    // Check if appointment exists
+    if (!appointment) {
+      return res
+        .status(404)
+        .json({ success: false, message: "Appointment not found" });
+    }
+
+    if (appointment.docId !== docId) {
+      return res
+        .status(403)
+        .json({ success: false, message: "Not Allowed" });
+    }
+
+    appointment.cancelled = true;
+    await appointment.save();
+    res.status(200).json({ success: true, message: "Appointment cancelled" });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: "Something went wrong",
       error: error.message,
     });
   }
