@@ -1,11 +1,11 @@
 import { useNavigate } from "react-router-dom";
 import { assets } from "../assets/assets";
-import { useAdminContext } from "../hooks/useAllContext";
+import { useAdminContext, useDoctorContext } from "../hooks/useAllContext";
 
 const Navbar = () => {
   const navigate = useNavigate();
   const { aToken, setAToken } = useAdminContext();
-  const dToken = localStorage.getItem("dToken");
+  const { dToken, setDToken } = useDoctorContext()
 
   const handleLogout = () => {
     if (aToken) {
@@ -13,6 +13,7 @@ const Navbar = () => {
       localStorage.removeItem("aToken");
     }
     if (dToken) {
+      setDToken(null);
       localStorage.removeItem("dToken");
     }
     navigate("/")

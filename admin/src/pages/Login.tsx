@@ -3,13 +3,14 @@ import { z } from "zod";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { loginSchema } from "../validators/formValidtor";
-import { useAdminContext } from "../hooks/useAllContext";
+import { useAdminContext, useDoctorContext } from "../hooks/useAllContext";
 import axios from "axios";
 import { toast } from "react-toastify";
 
 const Login: React.FC = () => {
   const [state, setState] = useState("Admin");
   const { setAToken, baseUrl } = useAdminContext();
+  const { setDToken } = useDoctorContext();
 
   const {
     register,
@@ -25,28 +26,31 @@ const Login: React.FC = () => {
 
   const onSubmit = async (data: z.infer<typeof loginSchema>) => {
     try {
-        if(state === "Admin") {
-            const response = await axios.post(`${baseUrl}/api/admin/login`, data);
-            if(response.status === 200) {
-                setAToken(response.data.token);
-                localStorage.setItem("aToken", response.data.token);
-            } else {
-                toast.error(response.data.message);
-            }
+      if (state === "Admin") {
+        const response = await axios.post(`${baseUrl}/api/admin/login`, data);
+        if (response.status === 200) {
+          toast.success(response.data.message);
+          setAToken(response.data.token);
+          localStorage.setItem("aToken", response.data.token);
         } else {
-            const response = await axios.post(`${baseUrl}/doctor/login`, data);
-            if(response.status === 200) {
-                setAToken(response.data.token); 
-                localStorage.setItem("dToken", response.data.token);
-            } else {
-                toast.error(response.data.message);
-            }
+          toast.error(response.data.message);
         }
+      } else {
+        const response = await axios.post(`${baseUrl}/api/doctor/login`, data);
+        if (response.status === 200) {
+          toast.success(response.data.message);
+          console.log(response.data);
+          setDToken(response.data.token);
+          localStorage.setItem("dToken", response.data.token);
+        } else {
+          toast.error(response.data.message);
+        }
+      }
     } catch (error) {
       if (axios.isAxiosError(error)) {
         toast.error(error.response?.data.message);
       } else {
-        toast.error('An unexpected error occurred');
+        toast.error("An unexpected error occurred");
       }
     }
   };
