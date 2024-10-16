@@ -144,9 +144,7 @@ export const completeAppointment = async (req, res) => {
     }
 
     if (appointment.docId !== docId) {
-      return res
-        .status(403)
-        .json({ success: false, message: "Not Allowed" });
+      return res.status(403).json({ success: false, message: "Not Allowed" });
     }
 
     appointment.isCompleted = true;
@@ -181,14 +179,62 @@ export const cancelAppointment = async (req, res) => {
     }
 
     if (appointment.docId !== docId) {
-      return res
-        .status(403)
-        .json({ success: false, message: "Not Allowed" });
+      return res.status(403).json({ success: false, message: "Not Allowed" });
     }
 
     appointment.cancelled = true;
     await appointment.save();
     res.status(200).json({ success: true, message: "Appointment cancelled" });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: "Something went wrong",
+      error: error.message,
+    });
+  }
+};
+
+//api to get dashboard data
+export const doctorDashboard = async (req, res) => {
+  try {
+    const { docId } = req.user;
+    const appointments = await Appointment.find({ docId });
+
+    if (!docId) {
+      return res
+        .status(400)
+        .json({ success: false, message: "Not Authorized" });
+    }
+
+    if (!appointments) {
+      return res
+        .status(400)
+        .json({ success: false, message: "No Appointment Found" });
+    }
+
+    let earnings = 0;
+
+    appointments.forEach((item) => {
+      if (item.isCompleted || item.payment) {
+        earnings += item.amount;
+      }
+    });
+
+    let patients = [];
+
+    appointments.forEach((item) => {
+      if (!patients.includes(item.userId)) {
+        patients.push(item.userId);
+      }
+    });
+
+    const dashData = {
+      earnings,
+      appointments: appointments.length,
+      patients: patients.length,
+      latestAppointments: appointments.reverse().slice(0, 5),
+    };
+    res.status(200).json({ success: true, dashData });
   } catch (error) {
     res.status(500).json({
       success: false,
