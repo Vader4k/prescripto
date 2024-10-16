@@ -28,7 +28,9 @@ const AllAppointment: React.FC = () => {
       if (res.data.success) {
         toast.success(res.data.message);
         getAllAppointments();
-      }
+      }else (
+        toast.error(res.data.message)
+      )
     } catch (error) {
       if (axios.isAxiosError(error)) {
         toast.error(error.response?.data.message);
@@ -96,6 +98,7 @@ const AllAppointment: React.FC = () => {
               <p className="text-sm text-red-300">Cancelled</p>
             )}
             {item.payment && <p className="text-sm text-green-300">Paid</p>}
+            {item.isCompleted && <p className="text-sm text-blue-300">Completed</p>}
           </div>
         ))}
       </div>

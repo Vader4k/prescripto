@@ -24,7 +24,9 @@ const DoctorAppointment: React.FC = () => {
       if (res.data.success) {
         toast.success(res.data.message);
         getAppointments();
-      }
+      }else (
+        toast.error(res.data.message)
+      )
     } catch (error) {
       if (axios.isAxiosError(error)) {
         toast.error(error.response?.data.message);
@@ -46,6 +48,8 @@ const DoctorAppointment: React.FC = () => {
       if (res.data.success) {
         toast.success(res.data.message);
         getAppointments();
+      }else {
+        toast.error(res.data.message)
       }
     } catch (error) {
       if (axios.isAxiosError(error)) {
@@ -96,9 +100,13 @@ const DoctorAppointment: React.FC = () => {
             </p>
             <p>${item.amount}</p>
             <div>
-              {item.cancelled == false &&
-                item.payment == false &&
-                item.isCompleted == false && (
+              {item.payment && <p className="text-sm text-green-300">Paid</p>}
+              {item.cancelled ? (
+                <p className="text-sm text-red-300">Cancelled</p>
+              ) : item.isCompleted ? (
+                <p className="text-sm text-green-300">Completed</p>
+              ) : (
+                <>
                   <button onClick={() => cancelAppointment(item._id)}>
                     <img
                       className="w-10"
@@ -106,19 +114,14 @@ const DoctorAppointment: React.FC = () => {
                       alt="cancel_icon"
                     />
                   </button>
-                )}
-              {item.cancelled && (
-                <p className="text-sm text-red-300">Cancelled</p>
-              )}
-              {item.payment && <p className="text-sm text-green-300">Paid</p>}
-              {item.isCompleted === false && item.cancelled === false && (
-                <button onClick={()=> completeAppointment(item._id)}>
-                  <img
-                    src={assets.tick_icon}
-                    alt="tick_icon"
-                    className="w-10"
-                  />
-                </button>
+                  <button onClick={() => completeAppointment(item._id)}>
+                    <img
+                      src={assets.tick_icon}
+                      alt="tick_icon"
+                      className="w-10"
+                    />
+                  </button>
+                </>
               )}
             </div>
           </div>
