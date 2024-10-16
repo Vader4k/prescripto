@@ -17,15 +17,38 @@ export const addDoctorSchema = z.object({
     addressLine2: z.string().min(1, "Address Line 2 is required"),
   }),
   speciality: z.string().min(1, "Speciality is required"),
-  image: z.preprocess(
-    (files) => {
-      if (files instanceof FileList) {
-        return files[0];
-      }
-      return files;
-    },
-    z.instanceof(File, { message: "Image is required" })
-  ),
+  image: z.preprocess((files) => {
+    if (files instanceof FileList) {
+      return files[0];
+    }
+    return files;
+  }, z.instanceof(File, { message: "Image is required" })),
   degree: z.string().min(1, "Degree is required"),
 });
 
+export const updateDoctorProfileSchema = z.object({
+  fees: z
+    .number()
+    .optional()
+    .nullable()
+    .refine((val) => !val || val >= 0, {
+      message: "Fees must be greater than or equal to 0",
+    }),
+  availability: z.boolean().optional().nullable(),
+  address: z
+    .object({
+      addressLine1: z.string().optional().nullable(),
+      addressLine2: z.string().optional().nullable(),
+    })
+    .optional()
+    .nullable(),
+}).refine((data) => {
+  //check if at least one data is available to be sent for change
+  return (
+    data.fees ||
+    data.availability ||
+    (data.address && (data.address.addressLine1 || data.address.addressLine2))
+  )
+}, {
+  message: "Please provide at least one field to update",
+});

@@ -3,6 +3,22 @@ import { IAppointment } from "./AdminContext";
 import axios from "axios";
 import { toast } from "react-toastify";
 
+export interface IDoctorData {
+  name: string;
+  image: string;
+  degree: string;
+  speciality: string;
+  experience: string;
+  about: string;
+  fees: number;
+  availability: boolean;
+  address?: {
+    line1?: string;
+    line2?: string;
+  };
+  slots_booked?: [];
+}
+
 interface IDoctorContext {
   dToken: string | null;
   setDToken: React.Dispatch<React.SetStateAction<string | null>>;
@@ -10,12 +26,14 @@ interface IDoctorContext {
   appointments: IAppointment[];
   getAppointments: () => Promise<void>;
   dashData: {
-    earnings: number,
-    appointments: number,
-    patients: number,
-    latestAppointments: IAppointment[],
+    earnings: number;
+    appointments: number;
+    patients: number;
+    latestAppointments: IAppointment[];
   };
   getDashData: () => Promise<void>;
+  getProfile: () => Promise<void>;
+  profileData: IDoctorData;
 }
 
 export const DoctorContext = createContext<IDoctorContext>({
@@ -31,6 +49,22 @@ export const DoctorContext = createContext<IDoctorContext>({
     latestAppointments: [],
   },
   getDashData: async () => {},
+  getProfile: async () => {},
+  profileData: {
+    name: "",
+    experience: "",
+    image: "",
+    about: "",
+    degree: "",
+    speciality: "",
+    fees: 0,
+    availability: true,
+    address: {
+      line1: "",
+      line2: "",
+    },
+    slots_booked: [],
+  },
 });
 
 export const DoctorProvider = ({ children }: { children: React.ReactNode }) => {
@@ -45,7 +79,9 @@ export const DoctorProvider = ({ children }: { children: React.ReactNode }) => {
     patients: 0,
     latestAppointments: [],
   });
+  const [profileData, setProfileData] = useState({} as IDoctorData);
 
+  //function to get doctors appointments
   const getAppointments = useCallback(async () => {
     try {
       const res = await axios.get(`${baseUrl}/api/doctor/appointments`, {
@@ -68,6 +104,7 @@ export const DoctorProvider = ({ children }: { children: React.ReactNode }) => {
     }
   }, [baseUrl, dToken]);
 
+  //function to get dashboard information
   const getDashData = useCallback(async () => {
     try {
       const res = await axios.get(`${baseUrl}/api/doctor/dashboard`, {
@@ -87,7 +124,29 @@ export const DoctorProvider = ({ children }: { children: React.ReactNode }) => {
         toast.error("Something went wrong");
       }
     }
-  },[baseUrl, dToken]);
+  }, [baseUrl, dToken]);
+
+  //api to get profileData
+  const getProfile = useCallback(async () => {
+    try {
+      const res = await axios.get(`${baseUrl}/api/doctor/profile`, {
+        headers: {
+          dToken,
+        },
+      });
+
+      if (!res.data.success) {
+        toast.error(res.data.message);
+      }
+      setProfileData(res.data.data);
+    } catch (error) {
+      if (axios.isAxiosError(error)) {
+        toast.error(error.response?.data.message);
+      } else {
+        toast.error("Something went wrong");
+      }
+    }
+  }, [baseUrl, dToken]);
 
   const value = {
     dToken,
@@ -97,6 +156,8 @@ export const DoctorProvider = ({ children }: { children: React.ReactNode }) => {
     getAppointments,
     dashData,
     getDashData,
+    profileData,
+    getProfile,
   };
 
   return (

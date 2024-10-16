@@ -255,7 +255,7 @@ export const doctorProfile = async (req, res) => {
         .json({ success: false, message: "Doctor not found" });
     }
 
-    res.status(200).json({ success: true, doctor });
+    res.status(200).json({ success: true, data: doctor });
   } catch (error) {
     res.status(500).json({
       success: false,
@@ -269,7 +269,7 @@ export const doctorProfile = async (req, res) => {
 export const updateDoctorProfile = async (req, res) => {
   try {
     const { docId } = req.user;
-    const { fees, address, available } = req.body;
+    const { fees, address, availability } = req.body;
 
     const doctor = await Doctor.findById(docId);
     if (!doctor) {
@@ -281,7 +281,7 @@ export const updateDoctorProfile = async (req, res) => {
     let missingFields = [];
     if (!fees) missingFields.push("fees");
     if (!address) missingFields.push("address");
-    if (!available) missingFields.push("available");
+    if (!availability) missingFields.push("available");
 
     if (missingFields.length === 3) {
       return res.status(400).json({
@@ -293,7 +293,7 @@ export const updateDoctorProfile = async (req, res) => {
     await Doctor.findByIdAndUpdate(docId, {
       fees,
       address,
-      available,
+      availability,
     });
     res
       .status(200)
