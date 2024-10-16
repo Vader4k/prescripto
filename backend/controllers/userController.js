@@ -155,7 +155,6 @@ export const updateProfile = async (req, res) => {
     let imageUrl = null;
 
     if (image) {
-      console.log("image path:", image.path);
       const uploadResult = await cloudinary.uploader.upload(image.path, {
         resource_type: "image",
       });

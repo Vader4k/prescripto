@@ -243,3 +243,66 @@ export const doctorDashboard = async (req, res) => {
     });
   }
 };
+
+//api to get doctor profile for doctor panel
+export const doctorProfile = async (req, res) => {
+  try {
+    const { docId } = req.user;
+    const doctor = await Doctor.findById(docId).select("-password");
+    if (!doctor) {
+      return res
+        .status(400)
+        .json({ success: false, message: "Doctor not found" });
+    }
+
+    res.status(200).json({ success: true, doctor });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: "Something went wrong",
+      error: error.message,
+    });
+  }
+};
+
+//api to update doctor profile
+export const updateDoctorProfile = async (req, res) => {
+  try {
+    const { docId } = req.user;
+    const { fees, address, available } = req.body;
+
+    const doctor = await Doctor.findById(docId);
+    if (!doctor) {
+      return res
+        .status(400)
+        .json({ success: false, message: "Doctor not found" });
+    }
+
+    let missingFields = [];
+    if (!fees) missingFields.push("fees");
+    if (!address) missingFields.push("address");
+    if (!available) missingFields.push("available");
+
+    if (missingFields.length === 3) {
+      return res.status(400).json({
+        success: false,
+        message: "At least one field must be provided for update.",
+      });
+    }
+
+    await Doctor.findByIdAndUpdate(docId, {
+      fees,
+      address,
+      available,
+    });
+    res
+      .status(200)
+      .json({ success: true, message: "Profile updated successfully" });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: "Something went wrong",
+      error: error.message,
+    });
+  }
+};
