@@ -2,7 +2,7 @@ import { assets } from "../../assets/assets";
 import DashboardCard from "../../components/DashboardCard";
 import { useAdminContext } from "../../hooks/useAllContext";
 import { useEffect } from "react";
-import AppointmentCard from "../../components/AppointmentCard";
+import AppointmentCard from "../../components/AdminAppointmentCard";
 
 const Dashboard: React.FC = () => {
   const { dashboardData, getDashboardData, aToken } = useAdminContext();

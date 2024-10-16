@@ -1,6 +1,6 @@
 import { assets } from "../../assets/assets";
-import AppointmentCard from "../../components/AppointmentCard";
 import DashboardCard from "../../components/DashboardCard";
+import DoctorAppointmentCard from "../../components/DoctorAppointmentCard";
 import { useDoctorContext } from "../../hooks/useAllContext";
 import { useEffect } from "react";
 
@@ -12,6 +12,8 @@ const DoctorDashboard = () => {
       getDashData();
     }
   }, [dToken, getDashData]);
+
+  console.log(dashData)
 
   return (
     dashData && (
@@ -43,9 +45,9 @@ const DoctorDashboard = () => {
 
           <div className="pt-4 border border-t-0">
             {dashData.latestAppointments.map((item) => (
-              <AppointmentCard
+              <DoctorAppointmentCard
                 key={item._id}
-                docData={item.docData}
+                userData={item.userData}
                 cancelled={item.cancelled}
                 _id={item._id}
                 slotDate={item.slotDate}
