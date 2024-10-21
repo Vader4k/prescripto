@@ -6,7 +6,7 @@ interface ITextAreaProps {
     id: "email" | "image" | "password" | "name" | "experience" | "fees" | "speciality" | "education" | "address" | "about" | "address.addressLine1" | "address.addressLine2";
     register: UseFormRegister<IDoctorSchema>;
     required?: boolean;
-    errors?: FieldError | undefined;
+    errors?: FieldError;
     placeholder: string;
 }
 
@@ -18,9 +18,9 @@ const TextArea: React.FC<ITextAreaProps> = ({ label, id, register, placeholder, 
           id={id}
           required={required}
           rows={5}
-          {...register(id)}
+          {...register("_id")}
           placeholder={placeholder}
-          className="w-full p-4 border outline-none"
+          className="p-4 w-full border outline-none"
         />
         {errors && <p className="text-sm text-red-500">{errors.message}</p>}
       </div>

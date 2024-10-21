@@ -1,4 +1,4 @@
-import { createContext, useEffect, useState, useCallback } from "react";
+import { createContext, useEffect, useState, useCallback, useMemo } from "react";
 import axios from "axios";
 import { toast } from "react-toastify";
 import { IDoctorSchema } from "../pages/Admin/AddDoctor";
@@ -72,7 +72,7 @@ export const AdminContext = createContext<{
 
 export const AdminProvider = ({ children }: { children: React.ReactNode }) => {
   const [aToken, setAToken] = useState<string>(
-    localStorage.getItem("aToken") || ""
+    localStorage.getItem("aToken") ?? ""
   );
   const [doctors, setDoctors] = useState<IDoctorSchema[]>([]); // Properly typed state
   const [appointments, setAppointments] = useState<IAppointment[]>([]); // Properly typed state
@@ -104,7 +104,7 @@ export const AdminProvider = ({ children }: { children: React.ReactNode }) => {
     }
   }, [aToken, baseUrl]);
 
-  const changeAvailability = async (docId: string) => {
+  const changeAvailability = useCallback(async (docId: string) => {
     try {
       const res = await axios.post(
         `${baseUrl}/api/admin/change-availability`,
@@ -128,7 +128,7 @@ export const AdminProvider = ({ children }: { children: React.ReactNode }) => {
         toast.error("An unexpected error occurred");
       }
     }
-  };
+  },[aToken, baseUrl, fetchDoctors])
 
   const getAllAppointments = useCallback(async () => {
     try {
@@ -171,7 +171,7 @@ export const AdminProvider = ({ children }: { children: React.ReactNode }) => {
     }
   }, [aToken, fetchDoctors]);
 
-  const value = {
+  const value = useMemo(() => ({
     aToken,
     setAToken,
     baseUrl,
@@ -181,7 +181,7 @@ export const AdminProvider = ({ children }: { children: React.ReactNode }) => {
     appointments,
     dashboardData,
     getDashboardData
-  };
+  }), [aToken, baseUrl, doctors, changeAvailability, getAllAppointments, appointments, dashboardData, getDashboardData]);
 
   return (
     <AdminContext.Provider value={value}>{children}</AdminContext.Provider>

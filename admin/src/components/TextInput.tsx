@@ -7,7 +7,7 @@ interface ITextInputProps {
     register: UseFormRegister<IDoctorSchema>;
     required?: boolean;
     type?: string;
-    errors?: FieldError | undefined;
+    errors?: FieldError;
 }
 
 export const TextInput: React.FC<ITextInputProps> = ({
@@ -31,7 +31,7 @@ export const TextInput: React.FC<ITextInputProps> = ({
                 placeholder={placeholder}
                 required={required}
                 {...register(id, { valueAsNumber: isNumber })}
-                className="w-full p-2 border outline-none"
+                className="p-2 w-full border outline-none"
             />
             {errors && <p className="text-sm text-red-500">{errors.message}</p>}
         </div>

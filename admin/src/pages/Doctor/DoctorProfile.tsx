@@ -91,10 +91,8 @@ const DoctorProfile: React.FC = () => {
 
   return (
     profileData && (
-      <div
-        className="w-full"
-      >
-        <div className="flex flex-col max-w-6xl gap-4 m-5">
+      <div className="w-full">
+        <div className="flex flex-col gap-4 m-5 max-w-6xl">
           <div>
             <img
               className="w-full rounded-lg bg-primary/80 sm:max-w-64"
@@ -102,12 +100,12 @@ const DoctorProfile: React.FC = () => {
               alt={profileData.name + "_image"}
             />
           </div>
-          <div className="flex-1 p-8 bg-white border rounded-lg border-stone-100 py-7">
+          <div className="flex-1 p-8 py-7 bg-white rounded-lg border border-stone-100">
             {/* information */}
             <p className="text-2xl font-medium text-gray-600">
               {profileData.name}
             </p>
-            <div className="flex items-center gap-2 mt-1 text-gray-600">
+            <div className="flex gap-2 items-center mt-1 text-gray-600">
               <p className="capitalize">
                 {profileData.degree} - {profileData.speciality}
               </p>
@@ -129,18 +127,16 @@ const DoctorProfile: React.FC = () => {
                 {!isEdit ? (
                   profileData.fees
                 ) : (
-                  <>
-                    <input
-                      placeholder="Enter fees"
-                      className="px-3 py-1 border outline-none"
-                      type="number"
-                      {...register("fees", {
-                        valueAsNumber: true, // This ensures the input is treated as a number
-                        setValueAs: (value) =>
-                          value === "" ? 0 : parseFloat(value), // Handle empty input or invalid number
-                      })}
-                    />
-                  </>
+                  <input
+                    placeholder="Enter fees"
+                    className="px-3 py-1 border outline-none"
+                    type="number"
+                    {...register("fees", {
+                      valueAsNumber: true, // This ensures the input is treated as a number
+                      setValueAs: (value) =>
+                        value === "" ? 0 : parseFloat(value), // Handle empty input or invalid number
+                    })}
+                  />
                 )}
               </span>
               {errors.fees && (
@@ -196,7 +192,7 @@ const DoctorProfile: React.FC = () => {
                 onClick={handleSubmit(onSubmit)}
                 disabled={loading}
                 type="submit"
-                className="px-4 py-1 mt-5 text-sm transition-all border rounded-full border-primary hover:bg-primary hover:text-white"
+                className="px-4 py-1 mt-5 text-sm rounded-full border transition-all border-primary hover:bg-primary hover:text-white"
               >
                 Update
               </button>
@@ -204,7 +200,7 @@ const DoctorProfile: React.FC = () => {
               <button
                 type="button"
                 onClick={() => setIsEdit(true)}
-                className="px-4 py-1 mt-5 text-sm transition-all border rounded-full border-primary hover:bg-primary hover:text-white"
+                className="px-4 py-1 mt-5 text-sm rounded-full border transition-all border-primary hover:bg-primary hover:text-white"
               >
                 Edit
               </button>
