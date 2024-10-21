@@ -265,7 +265,6 @@ export const doctorProfile = async (req, res) => {
   }
 };
 
-//api to update doctor profile
 export const updateDoctorProfile = async (req, res) => {
   try {
     const { docId } = req.user;
@@ -273,31 +272,22 @@ export const updateDoctorProfile = async (req, res) => {
 
     const doctor = await Doctor.findById(docId);
     if (!doctor) {
-      return res
-        .status(400)
-        .json({ success: false, message: "Doctor not found" });
+      return res.status(404).json({ success: false, message: "Doctor not found" });
     }
 
-    let missingFields = [];
-    if (!fees) missingFields.push("fees");
-    if (!address) missingFields.push("address");
-    if (!availability) missingFields.push("available");
-
-    if (missingFields.length === 3) {
-      return res.status(400).json({
-        success: false,
-        message: "At least one field must be provided for update.",
-      });
+    // Check if at least one field is provided
+    if (!fees && !address && availability === undefined) {
+      return res.status(400).json({ success: false, message: "At least one field is required" });
     }
 
-    await Doctor.findByIdAndUpdate(docId, {
-      fees,
-      address,
-      availability,
-    });
-    res
-      .status(200)
-      .json({ success: true, message: "Profile updated successfully" });
+    // Update only the fields that are provided
+    if (fees !== undefined) doctor.fees = fees;
+    if (address !== undefined) doctor.address = address;
+    if (availability !== undefined) doctor.availability = availability;
+
+    await doctor.save();
+    res.status(200).json({ success: true, message: "Profile updated successfully" });
+
   } catch (error) {
     res.status(500).json({
       success: false,

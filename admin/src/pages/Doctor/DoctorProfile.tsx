@@ -24,7 +24,6 @@ const DoctorProfile: React.FC = () => {
       getProfile();
     }
   }, [dToken, getProfile]);
-  
 
   const {
     register,
@@ -45,7 +44,38 @@ const DoctorProfile: React.FC = () => {
   });
 
   const onSubmit = async (data: IFormData) => {
-    console.log(data);
+    try {
+      const formData = new FormData();
+
+      // Append all form fields to FormData
+      formData.append("fees", data.fees.toString());
+      formData.append("availability", data.availability.toString());
+      formData.append(
+        "address",
+        JSON.stringify(data.address)
+      );
+      const res = await axios.post(
+        `${baseUrl}/api/doctor/update-profile`,
+        formData,
+        {
+          headers: { dToken, "Content-Type": "multipart/form-data" },
+        }
+      );
+      if (res.data.success) {
+        toast.success(res.data.message);
+        getProfile();
+        setIsEdit(false);
+      } else {
+        toast.error(res.data.message);
+        console.log(data);
+      }
+    } catch (error) {
+      if (axios.isAxiosError(error)) {
+        toast.error(error.response?.data.message);
+      } else {
+        toast.error("something went wrong");
+      }
+    }
   };
 
   //watch the availability field
@@ -63,7 +93,6 @@ const DoctorProfile: React.FC = () => {
       setValue("address.addressLine2", profileData.address?.line2 || "");
     }
   }, [profileData, setValue]);
-  
 
   return (
     profileData && (
@@ -164,15 +193,14 @@ const DoctorProfile: React.FC = () => {
                 </p>
               )}
             </div>
-            {isEdit && (
+            {isEdit ? (
               <button
                 onClick={handleSubmit(onSubmit)}
                 className="px-4 py-1 mt-5 text-sm transition-all border rounded-full border-primary hover:bg-primary hover:text-white"
               >
                 Update
               </button>
-            )}
-            {!isEdit && (
+            ) : (
               <button
                 onClick={() => setIsEdit(true)}
                 className="px-4 py-1 mt-5 text-sm transition-all border rounded-full border-primary hover:bg-primary hover:text-white"

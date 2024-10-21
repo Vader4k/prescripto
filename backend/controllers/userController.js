@@ -135,50 +135,44 @@ export const updateProfile = async (req, res) => {
     const { name, phone, address, dob, gender } = req.body;
     const image = req.file;
 
-    const missingFields = [];
-    if (!name) missingFields.push("name");
-    if (!phone) missingFields.push("phone");
-    if (!address) missingFields.push("address");
-    if (!dob) missingFields.push("date of birth");
-    if (!gender) missingFields.push("gender");
-    if (!image) missingFields.push("image");
+    // Create an object to hold the fields to update
+    const updateData = {};
 
-    // Check if at least one field is provided
-    if (missingFields.length === 6) {
-      // All fields are missing
-      return res.status(400).json({
-        success: false,
-        message: "At least one field must be provided for update.",
-      });
-    }
+    // Populate updateData based on provided fields
+    if (name) updateData.name = name;
+    if (phone) updateData.phone = phone;
+    if (address) updateData.address = address;
+    if (dob) updateData.dob = dob;
+    if (gender) updateData.gender = gender;
 
-    let imageUrl = null;
-
+    // Handle image upload if provided
     if (image) {
       const uploadResult = await cloudinary.uploader.upload(image.path, {
         resource_type: "image",
       });
 
       if (uploadResult.secure_url) {
-        imageUrl = uploadResult.secure_url;
+        updateData.image = uploadResult.secure_url; // Only add image if upload is successful
       } else {
         return res.status(500).json({
           success: false,
-          message: "Failed to upload image to cloudinary",
+          message: "Failed to upload image to Cloudinary",
         });
       }
     }
 
-    await User.findByIdAndUpdate(id, {
-      name,
-      phone,
-      address,
-      dob,
-      gender,
-      ...(imageUrl && { image: imageUrl }),
-    });
+    // Check if at least one field is provided
+    if (Object.keys(updateData).length === 0) {
+      return res.status(400).json({
+        success: false,
+        message: "At least one field must be provided for update.",
+      });
+    }
 
-    return res.status(200).json({ success: true, message: "Profile updated" });
+    // Update user with the fields provided
+    await User.findByIdAndUpdate(id, updateData, { new: true }); // `new: true` returns the updated document
+
+    return res.status(200).json({ success: true, message: "Profile updated successfully" });
   } catch (error) {
     console.log(error);
     res.status(500).json({
@@ -188,6 +182,7 @@ export const updateProfile = async (req, res) => {
     });
   }
 };
+
 
 //book appointment
 export const bookAppointment = async (req, res) => {
