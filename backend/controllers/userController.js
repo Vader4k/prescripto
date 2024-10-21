@@ -172,7 +172,9 @@ export const updateProfile = async (req, res) => {
     // Update user with the fields provided
     await User.findByIdAndUpdate(id, updateData, { new: true }); // `new: true` returns the updated document
 
-    return res.status(200).json({ success: true, message: "Profile updated successfully" });
+    return res
+      .status(200)
+      .json({ success: true, message: "Profile updated successfully" });
   } catch (error) {
     console.log(error);
     res.status(500).json({
@@ -183,13 +185,10 @@ export const updateProfile = async (req, res) => {
   }
 };
 
-
 //book appointment
 export const bookAppointment = async (req, res) => {
   try {
     const { id } = req.user; // Get the user's ID from the request
-    const { docId, slotDate, slotTime } = req.body; // Get doctor ID, date, and time from the request body
-
     if (!id || !docId || !slotDate || !slotTime) {
       return res
         .status(400)
@@ -201,8 +200,6 @@ export const bookAppointment = async (req, res) => {
       slotTime,
       docId,
     });
-
-    console.log(existingAppointment);
 
     if (existingAppointment && existingAppointment.cancelled == false) {
       return res.status(400).json({
@@ -225,6 +222,12 @@ export const bookAppointment = async (req, res) => {
       return res
         .status(404)
         .json({ success: false, message: "User not found" });
+    }
+
+    if (doctor.availability == false) {
+      return res
+        .status(400)
+        .json({ success: false, message: "Doctor is not available" });
     }
 
     const appointmentData = {
@@ -345,24 +348,25 @@ export const cancelAppointment = async (req, res) => {
 //api to make payment without a gateway for now
 export const makePayment = async (req, res) => {
   try {
-    const { id } = req.user
-    const { appId } = req.body
+    const { id } = req.user;
+    const { appId } = req.body;
 
-    const appointment = await Appointment.findById(appId)
-    if(!appointment){
-      return res.status(400).json({success: false, message: "Appoint not found"})
+    const appointment = await Appointment.findById(appId);
+    if (!appointment) {
+      return res
+        .status(400)
+        .json({ success: false, message: "Appoint not found" });
     }
 
-    if(appointment.userId !== id){
+    if (appointment.userId !== id) {
       return res
         .status(400)
         .json({ success: false, message: "Unauthorized action" });
     }
 
     appointment.payment = true;
-    await appointment.save()
-    res.status(200).json({success: true, message: "Payment successful"})
-  
+    await appointment.save();
+    res.status(200).json({ success: true, message: "Payment successful" });
   } catch (error) {
     res.status(500).json({
       success: false,
