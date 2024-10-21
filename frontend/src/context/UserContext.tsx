@@ -8,6 +8,7 @@ export interface IDoctor {
   name: string;
   image: string;
   speciality: string;
+  availability: boolean;
   degree: string;
   experience: string;
   about: string;

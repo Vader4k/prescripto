@@ -10,8 +10,8 @@ const TopDoctors: React.FC = () => {
       <h1>Top Doctors</h1>
       <p>Simply browse through our extensive list of trusted doctors.</p>
       <div className="grid w-full gap-4 px-3 pt-5 grid-cols-auto gap-y-6 sm:px-0">
-        {doctors.slice(0, 10).map(({ _id, name, speciality, image }) => (
-          <DoctorCard key={_id} {...{ _id, name, speciality, image }} />
+        {doctors.slice(0, 10).map(({ _id, name, speciality, image , availability}) => (
+          <DoctorCard key={_id} {...{ _id, name, speciality, image , availability}} />
         ))}
       </div>
       <button
