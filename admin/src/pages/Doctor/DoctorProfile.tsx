@@ -91,10 +91,8 @@ const DoctorProfile: React.FC = () => {
 
   return (
     profileData && (
-      <form
-        onSubmit={handleSubmit(onSubmit)}
+      <div
         className="w-full"
-        encType="application/json"
       >
         <div className="flex flex-col max-w-6xl gap-4 m-5">
           <div>
@@ -180,6 +178,7 @@ const DoctorProfile: React.FC = () => {
             <div className="flex gap-1 pt-2">
               <input
                 checked={availability}
+                disabled={!isEdit}
                 type="checkbox"
                 id="checkbox"
                 className="w-4 h-4"
@@ -213,7 +212,7 @@ const DoctorProfile: React.FC = () => {
           </div>
         </div>
         {loading && <Loader />}
-      </form>
+      </div>
     )
   );
 };
