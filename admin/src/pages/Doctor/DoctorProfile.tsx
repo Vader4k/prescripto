@@ -7,12 +7,12 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { updateDoctorProfileSchema } from "../../validators/formValidtor";
 
 interface IFormData {
-  fees: number,
-  availability: boolean,
+  fees: number;
+  availability: boolean;
   address: {
-    addressLine1: string,
-    addressLine2: string
-  }
+    addressLine1: string;
+    addressLine2: string;
+  };
 }
 
 const DoctorProfile: React.FC = () => {
@@ -24,18 +24,46 @@ const DoctorProfile: React.FC = () => {
       getProfile();
     }
   }, [dToken, getProfile]);
+  
 
   const {
     register,
     handleSubmit,
+    watch,
+    setValue,
     formState: { errors },
   } = useForm<IFormData>({
     resolver: zodResolver(updateDoctorProfileSchema),
+    defaultValues: {
+      fees: profileData?.fees || 0,
+      availability: profileData?.availability || false,
+      address: {
+        addressLine1: profileData?.address?.line1 || "",
+        addressLine2: profileData?.address?.line2 || "",
+      },
+    },
   });
 
   const onSubmit = async (data: IFormData) => {
-    console.log(data)
-  }
+    console.log(data);
+  };
+
+  //watch the availability field
+  const availability = watch("availability", profileData.availability);
+
+  const toggleAvailability = () => {
+    setValue("availability", !availability);
+  };
+
+  useEffect(() => {
+    if (profileData) {
+      setValue("fees", profileData.fees || 0);
+      setValue("availability", profileData.availability || false);
+      setValue("address.addressLine1", profileData.address?.line1 || "");
+      setValue("address.addressLine2", profileData.address?.line2 || "");
+    }
+  }, [profileData, setValue]);
+  
 
   return (
     profileData && (
@@ -70,39 +98,88 @@ const DoctorProfile: React.FC = () => {
             </div>
             <p className="mt-4 font-medium text-gray-600">
               Appointment fee:{" "}
-              <span className="text-gray-800">${isEdit ? profileData.fees : <><input type="number" {...register("fees")}/></>}</span>
-              {errors.fees && <p className="my-2 text-sm text-red-500">{errors.fees.message}</p>}
+              <span className="text-gray-800">
+                $
+                {!isEdit ? (
+                  profileData.fees
+                ) : (
+                  <>
+                    <input
+                      placeholder="Enter fees"
+                      className="px-3 py-1 border outline-none"
+                      type="number"
+                      {...register("fees", {
+                        valueAsNumber: true, // This ensures the input is treated as a number
+                        setValueAs: (value) =>
+                          value === "" ? 0 : parseFloat(value), // Handle empty input or invalid number
+                      })}
+                    />
+                  </>
+                )}
+              </span>
+              {errors.fees && (
+                <p className="my-2 text-sm text-red-500">
+                  {errors.fees.message}
+                </p>
+              )}
             </p>
             <div className="flex gap-2 py-2">
               <p>Address:</p>
-              <p className="text-sm capitalize">
-                {profileData.address?.line1} <br />
-                {profileData.address?.line2}
-              </p>
+              <div className="text-sm capitalize">
+                {!isEdit ? (
+                  profileData.address?.line1
+                ) : (
+                  <input
+                    type="text"
+                    placeholder="Enter address one"
+                    className="px-3 py-1 border outline-none"
+                    {...register("address.addressLine1")}
+                  />
+                )}
+                <br />
+                {!isEdit ? (
+                  profileData.address?.line2
+                ) : (
+                  <input
+                    type="text"
+                    placeholder="Enter address two"
+                    className="px-3 py-1 border outline-none"
+                    {...register("address.addressLine2")}
+                  />
+                )}
+              </div>
             </div>
             <div className="flex gap-1 pt-2">
               <input
-                checked={profileData.availability}
+                checked={availability}
                 type="checkbox"
                 id="checkbox"
                 className="w-4 h-4"
-                {...register("availability")}
+                onChange={toggleAvailability}
               />
               <label htmlFor="checkbox">Availability</label>
-              {errors.availability && <p className="my-2 text-sm text-red-500">{errors.availability.message}</p>}
+              {errors.availability && (
+                <p className="my-2 text-sm text-red-500">
+                  {errors.availability.message}
+                </p>
+              )}
             </div>
-            {isEdit && <button
-              onClick={handleSubmit(onSubmit)}
-              className="px-4 py-1 mt-5 text-sm transition-all border rounded-full border-primary hover:bg-primary hover:text-white"
-            >
-              Update
-            </button>}
-            {!isEdit && <button
-              onClick={() => setIsEdit(true)}
-              className="px-4 py-1 mt-5 text-sm transition-all border rounded-full border-primary hover:bg-primary hover:text-white"
-            >
-              Edit
-            </button>}
+            {isEdit && (
+              <button
+                onClick={handleSubmit(onSubmit)}
+                className="px-4 py-1 mt-5 text-sm transition-all border rounded-full border-primary hover:bg-primary hover:text-white"
+              >
+                Update
+              </button>
+            )}
+            {!isEdit && (
+              <button
+                onClick={() => setIsEdit(true)}
+                className="px-4 py-1 mt-5 text-sm transition-all border rounded-full border-primary hover:bg-primary hover:text-white"
+              >
+                Edit
+              </button>
+            )}
           </div>
         </div>
       </div>
