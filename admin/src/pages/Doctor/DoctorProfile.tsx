@@ -5,19 +5,21 @@ import { toast } from "react-toastify";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { updateDoctorProfileSchema } from "../../validators/formValidtor";
+import Loader from "../../components/Loader";
 
 interface IFormData {
   fees: number;
   availability: boolean;
   address: {
-    addressLine1: string;
-    addressLine2: string;
+    line1: string;
+    line2: string;
   };
 }
 
 const DoctorProfile: React.FC = () => {
   const { getProfile, profileData, dToken, baseUrl } = useDoctorContext();
   const [isEdit, setIsEdit] = useState<boolean>(false);
+  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
     if (dToken) {
@@ -33,43 +35,36 @@ const DoctorProfile: React.FC = () => {
     formState: { errors },
   } = useForm<IFormData>({
     resolver: zodResolver(updateDoctorProfileSchema),
-    defaultValues: {
-      fees: profileData?.fees || 0,
-      availability: profileData?.availability || false,
-      address: {
-        addressLine1: profileData?.address?.line1 || "",
-        addressLine2: profileData?.address?.line2 || "",
-      },
-    },
   });
 
   const onSubmit = async (data: IFormData) => {
+    setLoading(true);
     try {
-      const formData = new FormData();
-
-      // Append all form fields to FormData
-      formData.append("fees", data.fees.toString());
-      formData.append("availability", data.availability.toString());
-      formData.append(
-        "address",
-        JSON.stringify(data.address)
-      );
       const res = await axios.post(
         `${baseUrl}/api/doctor/update-profile`,
-        formData,
         {
-          headers: { dToken, "Content-Type": "multipart/form-data" },
+          fees: data.fees,
+          availability: data.availability,
+          address: {
+            line1: data.address.line1,
+            line2: data.address.line2,
+          },
+        },
+        {
+          headers: { dToken, "Content-Type": "application/json" },
         }
       );
       if (res.data.success) {
         toast.success(res.data.message);
         getProfile();
         setIsEdit(false);
+        setLoading(false);
       } else {
         toast.error(res.data.message);
         console.log(data);
       }
     } catch (error) {
+      setLoading(false);
       if (axios.isAxiosError(error)) {
         toast.error(error.response?.data.message);
       } else {
@@ -89,14 +84,18 @@ const DoctorProfile: React.FC = () => {
     if (profileData) {
       setValue("fees", profileData.fees || 0);
       setValue("availability", profileData.availability || false);
-      setValue("address.addressLine1", profileData.address?.line1 || "");
-      setValue("address.addressLine2", profileData.address?.line2 || "");
+      setValue("address.line1", profileData.address?.line1 || "");
+      setValue("address.line2", profileData.address?.line2 || "");
     }
   }, [profileData, setValue]);
 
   return (
     profileData && (
-      <div>
+      <form
+        onSubmit={handleSubmit(onSubmit)}
+        className="w-full"
+        encType="application/json"
+      >
         <div className="flex flex-col max-w-6xl gap-4 m-5">
           <div>
             <img
@@ -162,7 +161,7 @@ const DoctorProfile: React.FC = () => {
                     type="text"
                     placeholder="Enter address one"
                     className="px-3 py-1 border outline-none"
-                    {...register("address.addressLine1")}
+                    {...register("address.line1")}
                   />
                 )}
                 <br />
@@ -173,7 +172,7 @@ const DoctorProfile: React.FC = () => {
                     type="text"
                     placeholder="Enter address two"
                     className="px-3 py-1 border outline-none"
-                    {...register("address.addressLine2")}
+                    {...register("address.line2")}
                   />
                 )}
               </div>
@@ -196,12 +195,15 @@ const DoctorProfile: React.FC = () => {
             {isEdit ? (
               <button
                 onClick={handleSubmit(onSubmit)}
+                disabled={loading}
+                type="submit"
                 className="px-4 py-1 mt-5 text-sm transition-all border rounded-full border-primary hover:bg-primary hover:text-white"
               >
                 Update
               </button>
             ) : (
               <button
+                type="button"
                 onClick={() => setIsEdit(true)}
                 className="px-4 py-1 mt-5 text-sm transition-all border rounded-full border-primary hover:bg-primary hover:text-white"
               >
@@ -210,7 +212,8 @@ const DoctorProfile: React.FC = () => {
             )}
           </div>
         </div>
-      </div>
+        {loading && <Loader />}
+      </form>
     )
   );
 };

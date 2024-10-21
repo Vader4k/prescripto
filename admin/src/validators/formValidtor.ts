@@ -39,8 +39,8 @@ export const updateDoctorProfileSchema = z
     availability: z.boolean().optional().nullable(),
     address: z
       .object({
-        addressLine1: z.string().optional().nullable(),
-        addressLine2: z.string().optional().nullable(),
+        line1: z.string().optional().nullable(),
+        line2: z.string().optional().nullable(),
       })
       .optional()
       .nullable(),
@@ -52,7 +52,7 @@ export const updateDoctorProfileSchema = z
         data.fees ||
         data.availability ||
         (data.address &&
-          (data.address.addressLine1 || data.address.addressLine2))
+          (data.address.line1 || data.address.line2))
       );
     },
     {
