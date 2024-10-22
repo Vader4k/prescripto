@@ -70,7 +70,7 @@ export const DoctorContext = createContext<IDoctorContext>({
 export const DoctorProvider = ({ children }: { children: React.ReactNode }) => {
   const baseUrl = import.meta.env.VITE_API_URL;
   const [dToken, setDToken] = useState<string | null>(
-    localStorage.getItem("dToken") || null
+    localStorage.getItem("dToken") ?? null
   );
   const [appointments, setAppointments] = useState<IAppointment[]>([]);
   const [dashData, setDashData] = useState({
