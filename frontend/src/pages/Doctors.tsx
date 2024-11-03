@@ -65,8 +65,8 @@ const Doctors: React.FC = () => {
                 {speciality ? `${speciality} Doctors` : "All Doctors"}
               </h2>
               <ul className="grid w-full gap-4 px-3 pt-5 grid-cols-auto gap-y-6 sm:px-0">
-                {filteredDoctors.map(({ _id, name, speciality, image }) => (
-                  <DoctorCard key={_id} {...{ _id, name, speciality, image }} />
+                {filteredDoctors.map(({ _id, name, speciality, image, availability }) => (
+                  <DoctorCard key={_id} {...{ _id, name, speciality, image, availability }} />
                 ))}
               </ul>
             </div>
