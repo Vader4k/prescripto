@@ -71,7 +71,7 @@ export const AdminContext = createContext<{
 });
 
 export const AdminProvider = ({ children }: { children: React.ReactNode }) => {
-  const [aToken, setAToken] = useState<string>(
+  const [aToken, setAToken] = useState<string | null>(
     localStorage.getItem("aToken") ?? ""
   );
   const [doctors, setDoctors] = useState<IDoctorSchema[]>([]); // Properly typed state
@@ -98,6 +98,8 @@ export const AdminProvider = ({ children }: { children: React.ReactNode }) => {
     } catch (error) {
       if (axios.isAxiosError(error)) {
         toast.error(error.response?.data.message);
+        setAToken(null)
+        localStorage.removeItem("aToken")
       } else {
         toast.error("An unexpected error occurred");
       }
@@ -124,6 +126,8 @@ export const AdminProvider = ({ children }: { children: React.ReactNode }) => {
     } catch (error) {
       if (axios.isAxiosError(error)) {
         toast.error(error.response?.data.message);
+        setAToken(null)
+        localStorage.removeItem("aToken")
       } else {
         toast.error("An unexpected error occurred");
       }
@@ -143,6 +147,8 @@ export const AdminProvider = ({ children }: { children: React.ReactNode }) => {
     } catch (error) {
       if (axios.isAxiosError(error)) {
         toast.error(error.response?.data.message);
+        setAToken(null)
+        localStorage.removeItem("aToken")
       } else {
         console.log(error);
         toast.error("An unexpected error occurred");
@@ -159,6 +165,8 @@ export const AdminProvider = ({ children }: { children: React.ReactNode }) => {
     } catch (error) {
       if(axios.isAxiosError(error)){
         toast.error(error.response?.data.message)
+        setAToken(null)
+        localStorage.removeItem("aToken")
       }else{
         toast.error("something went wrong")
       }

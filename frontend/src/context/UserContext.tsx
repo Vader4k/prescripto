@@ -99,6 +99,9 @@ export const UserProvider = ({ children }: { children: React.ReactNode }) => {
     } catch (error) {
       if(axios.isAxiosError(error)){
         toast.error(error?.response?.data.message)
+        setToken(null)
+        localStorage.removeItem("token")
+        console.log("bad token")
       }
       console.log(error)
       toast.error("something went wrong")

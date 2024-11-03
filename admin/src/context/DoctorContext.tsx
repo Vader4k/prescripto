@@ -120,6 +120,8 @@ export const DoctorProvider = ({ children }: { children: React.ReactNode }) => {
     } catch (error) {
       if (axios.isAxiosError(error)) {
         toast.error(error.response?.data.message);
+        setDToken(null);
+        localStorage.removeItem("dToken");
       } else {
         toast.error("Something went wrong");
       }
@@ -142,6 +144,8 @@ export const DoctorProvider = ({ children }: { children: React.ReactNode }) => {
     } catch (error) {
       if (axios.isAxiosError(error)) {
         toast.error(error.response?.data.message);
+        setDToken(null);
+        localStorage.removeItem("dToken");
       } else {
         toast.error("Something went wrong");
       }
