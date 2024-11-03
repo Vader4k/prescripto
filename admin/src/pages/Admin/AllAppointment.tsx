@@ -1,9 +1,9 @@
 import { useEffect } from "react";
-import { useAdminContext } from "../../hooks/useAllContext";
-import { useAppContext } from "../../hooks/useAllContext";
+import { useAdminContext, useAppContext } from "../../hooks/useAllContext";
 import { assets } from "../../assets/assets";
 import axios from "axios";
 import { toast } from "react-toastify";
+import { IAppointment } from "../../context/AdminContext";
 
 const AllAppointment: React.FC = () => {
   const { aToken, getAllAppointments, appointments, baseUrl } =
@@ -40,8 +40,12 @@ const AllAppointment: React.FC = () => {
     }
   };
 
+  const canCancelAppointment = (item: IAppointment) => {
+    return !item.cancelled && !item.payment && !item.isCompleted;
+  };
+
   return (
-    <div className="w-full max-w-6xl m-5">
+    <div className="m-5 w-full max-w-6xl">
       <h1 className="mb-3 text-lg font-medium">All Appointments</h1>
       <div className="text-sm bg-white border rounded max-h-[80vh] min-h-[60vh] overflow-y-scroll">
         <div className="hidden sm:grid grid-cols-[0.5fr_3fr_1fr_3fr_3fr_1fr_1fr] grid-flow-col py-3 px-6 border-b">
@@ -60,7 +64,7 @@ const AllAppointment: React.FC = () => {
             key={item._id}
           >
             <p className="max-sm:hidden">{i + 1}</p>
-            <div className="flex items-center gap-2">
+            <div className="flex gap-2 items-center">
               <img
                 className="rounded-full size-8"
                 src={item.userData.image}
@@ -74,7 +78,7 @@ const AllAppointment: React.FC = () => {
             <p>
               {item.slotDate}, {item.slotTime}
             </p>
-            <div className="flex items-center gap-2">
+            <div className="flex gap-2 items-center">
               <img
                 className="bg-gray-200 rounded-full size-8"
                 src={item.docData.image}
@@ -83,9 +87,7 @@ const AllAppointment: React.FC = () => {
               <p className="capitalize">{item.docData.name}</p>
             </div>
             <p>${item.docData.fees}</p>
-            {item.cancelled == false &&
-              item.payment == false &&
-              item.isCompleted == false && (
+            {canCancelAppointment(item) && (
                 <button onClick={() => cancelAppointment(item._id)}>
                   <img
                     className="w-10"

@@ -7,7 +7,7 @@ interface IFileInputProps {
     id: "image" | "name" | "email" | "password" | "experience" | "fees" | "speciality" | "degree" | "address" | "about" | "address.addressLine1" | "address.addressLine2";
     register: UseFormRegister<IDoctorSchema>;
     required?: boolean;
-    errors?: FieldError | undefined;
+    errors?: FieldError;
     img: string;
 }
 
@@ -16,7 +16,7 @@ const FileInput: React.FC<IFileInputProps> = ({ label, id, register, errors, img
     const [docImage, setDocImage] = useState<string | null>(null);
 
     return (
-      <div className="flex items-center gap-3 mb-8 text-gray-800">
+      <div className="flex gap-3 items-center mb-8 text-gray-800">
         <label htmlFor={id}>
           <img
             className="w-16 bg-gray-100 rounded-full cursor-pointer"

@@ -41,8 +41,10 @@ const AppointmentCard = ({
     }
   };
 
+  const canCancelAppointment = () => !cancelled && !payment && !isCompleted;
+
   return (
-    <div className="flex items-center gap-3 px-6 py-3 hover:bg-gray-100">
+    <div className="flex gap-3 items-center px-6 py-3 hover:bg-gray-100">
       <img
         className="rounded-full size-10"
         src={docData.image}
@@ -52,7 +54,7 @@ const AppointmentCard = ({
         <p className="font-medium text-gray-800">{docData.name}</p>
         <p className="text-gray-600">{slotDate}</p>
       </div>
-      {cancelled == false && payment == false && isCompleted == false && (
+      {canCancelAppointment() && (
         <button onClick={() => cancelAppointment(_id)}>
           <img className="w-10" src={assets.cancel_icon} alt="cancel_icon" />
         </button>

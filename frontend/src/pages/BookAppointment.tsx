@@ -158,7 +158,7 @@ const BookAppointment: React.FC = () => {
           <div className="mt-5">
             <h2 className="py-4 font-medium">Booking slots</h2>
             <div className="flex items-start gap-5">
-              {weekDays.map((dayInfo, index) => (
+              {weekDays.map((dayInfo) => (
                 <button
                   disabled={loading}
                   onClick={() => setSelectedDay(dayInfo.date)}
@@ -167,7 +167,7 @@ const BookAppointment: React.FC = () => {
                       ? "bg-primary text-white"
                       : "bg-white"
                   }`}
-                  key={index}
+                  key={dayInfo.date}
                 >
                   <span className="uppercase ">{dayInfo.day}</span>
                   <span className="text-sm">{dayInfo.date.slice(0,2)}</span>

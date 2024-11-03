@@ -7,7 +7,7 @@ interface ISelectInputProps {
     register: UseFormRegister<IDoctorSchema>;
     required?: boolean;
     defaultValue?: string;
-    errors?: FieldError | undefined;
+    errors?: FieldError;
 }
 
 export const SelectInput: React.FC<ISelectInputProps> = ({ label, id, register, options, required = false, defaultValue, errors }) => {
@@ -16,9 +16,9 @@ export const SelectInput: React.FC<ISelectInputProps> = ({ label, id, register, 
         <label htmlFor={id}>{label}</label>
         <select
           id={id}
-          {...register(id)}
+          {...register("_id")}
           defaultValue={defaultValue}
-          className="w-full p-2 border outline-none"
+          className="p-2 w-full border outline-none"
           required={required}
         >
           {options.map(option => (

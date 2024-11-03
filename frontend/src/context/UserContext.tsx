@@ -1,5 +1,4 @@
-import { createContext } from "react";
-import { useState, useCallback, useEffect, useMemo } from "react";
+import { useState, useCallback, useEffect, useMemo, createContext } from "react";
 import axios from "axios";
 import { toast } from "react-toastify";
 
@@ -50,21 +49,21 @@ export const UserProvider = ({ children }: { children: React.ReactNode }) => {
   const baseUrl = import.meta.env.VITE_API_URL;
   const [doctors, setDoctors] = useState<IDoctor[]>([]);
   const [token, setToken] = useState<string | null>(
-    localStorage.getItem("token") || null
+    localStorage.getItem("token") ?? null
   );
   const [userData, setUserData] = useState<IUserData>({
     name: "",
     email: "",
     image: "",
-    phone: "", // Optional property
-    gender: "", // Optional property
-    dob: "", // Optional property
+    phone: "",
+    gender: "", 
+    dob: "", 
     address: {
       line1: "",
-      line2: "" // Optional property
+      line2: ""
     },
-    appointments: [] // Initialize as an empty array
-  }); // Initialize with dummy IUserData values
+    appointments: []
+  }); 
 
   const getDoctors = useCallback(async () => {
     try {
@@ -115,7 +114,7 @@ export const UserProvider = ({ children }: { children: React.ReactNode }) => {
 
   const memorizedDoctors = useMemo(() => doctors, [doctors]);
 
-  const value = {
+  const value = useMemo(() => ({
     doctors,
     memorizedDoctors,
     token,
@@ -124,7 +123,7 @@ export const UserProvider = ({ children }: { children: React.ReactNode }) => {
     userData: userData || null,
     getUserData,
     getDoctors
-  };
+  }), [doctors, memorizedDoctors, token, setToken, baseUrl, userData, getUserData, getDoctors]);
 
   return <UserContext.Provider value={value}>{children}</UserContext.Provider>;
 };

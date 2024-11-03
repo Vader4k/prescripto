@@ -5,7 +5,7 @@ const SpecialityMenu = () => {
   return (
     <section id="speciality">
       <div className="container flex flex-col items-center justify-center gap-5 mx-auto">
-        <h1>Find by Speciality</h1>
+        <h1 className="font-semibold">Find by Speciality</h1>
         <p className="max-w-[500px] text-center text-gray-600">
           Simply browse through our extensive list of trusted doctors and
           schedule an appointment hassle-free.
@@ -13,7 +13,6 @@ const SpecialityMenu = () => {
         <div className="flex w-full gap-4 pt-5 overflow-x-auto sm:justify-center">
           {Object.entries(specialityData).map(([key, value]) => (
             <Link
-              onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
               className="flex flex-col items-center text-center text-xs cursor-pointer flex-shrink-0 hover:translate-y-[-10px] transition-all duration-500"
               to={`/doctors/${value.speciality}`}
               key={key}

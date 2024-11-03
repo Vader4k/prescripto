@@ -1,4 +1,4 @@
-import { createContext, useCallback, useState } from "react";
+import { createContext, useCallback, useState, useMemo } from "react";
 import { IAppointment } from "./AdminContext";
 import axios from "axios";
 import { toast } from "react-toastify";
@@ -70,7 +70,7 @@ export const DoctorContext = createContext<IDoctorContext>({
 export const DoctorProvider = ({ children }: { children: React.ReactNode }) => {
   const baseUrl = import.meta.env.VITE_API_URL;
   const [dToken, setDToken] = useState<string | null>(
-    localStorage.getItem("dToken") || null
+    localStorage.getItem("dToken") ?? null
   );
   const [appointments, setAppointments] = useState<IAppointment[]>([]);
   const [dashData, setDashData] = useState({
@@ -148,7 +148,7 @@ export const DoctorProvider = ({ children }: { children: React.ReactNode }) => {
     }
   }, [baseUrl, dToken]);
 
-  const value = {
+  const value = useMemo(() => ({
     dToken,
     setDToken,
     baseUrl,
@@ -158,7 +158,7 @@ export const DoctorProvider = ({ children }: { children: React.ReactNode }) => {
     getDashData,
     profileData,
     getProfile,
-  };
+  }), [dToken, baseUrl, appointments, dashData, profileData, getAppointments, getDashData, getProfile]);
 
   return (
     <DoctorContext.Provider value={value}>{children}</DoctorContext.Provider>

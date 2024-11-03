@@ -1,4 +1,4 @@
-import { createContext } from "react";
+import { createContext, useMemo } from "react";
 
 type AppContextType = {
   calculateAge: (dob: string) => number;
@@ -18,9 +18,9 @@ export const AppProvider = ({ children }: { children: React.ReactNode }) => {
     return age
   }
 
-  const value = {
+  const value =  useMemo(() => ({
     calculateAge
-  };
+  }), [calculateAge])
 
   return <AppContext.Provider value={value}>{children}</AppContext.Provider>;
 };

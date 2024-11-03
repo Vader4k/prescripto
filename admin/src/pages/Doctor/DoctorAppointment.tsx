@@ -63,7 +63,7 @@ const DoctorAppointment: React.FC = () => {
   
 
   return (
-    <div className="w-full max-w-6xl m-5">
+    <div className="m-5 w-full max-w-6xl">
       <p className="mb-3 text-lg font-medium">All Appointments</p>
       <div className="text-sm bg-white border rounded max-h-[80vh] min-h-[50vh] overflow-y-scroll">
         <div className="grid max-sm:hidden grid-cols-[0.5fr_2fr_1fr_1fr_3fr_1fr_1fr] gap-1 py-3 px-6 border-b">
@@ -81,7 +81,7 @@ const DoctorAppointment: React.FC = () => {
             className="flex flex-wrap justify-between max-sm:gap-5 max-sm:text-base sm:grid grid-cols-[0.5fr_2fr_1fr_1fr_3fr_1fr_1fr] gap-1 items-center text-gray-500 py-3 px-6 border-b hover:bg-gray-50 transition-all"
           >
             <p className="max-sm:hidden">{index + 1}</p>
-            <div className="flex items-center gap-2">
+            <div className="flex gap-2 items-center">
               <img
                 className="rounded-full size-8"
                 src={item.userData.image}
@@ -90,7 +90,7 @@ const DoctorAppointment: React.FC = () => {
               <p className="capitalize">{item.userData.name}</p>
             </div>
             <div>
-              <p className="inline px-2 text-xs border rounded-full border-primary">
+              <p className="inline px-2 text-xs rounded-full border border-primary">
                 {item.payment ? "Online" : "CASH"}
               </p>
             </div>
@@ -101,28 +101,32 @@ const DoctorAppointment: React.FC = () => {
             <p>${item.amount}</p>
             <div>
               {item.payment && <p className="text-sm text-green-300">Paid</p>}
-              {item.cancelled ? (
-                <p className="text-sm text-red-300">Cancelled</p>
-              ) : item.isCompleted ? (
-                <p className="text-sm text-green-300">Completed</p>
-              ) : (
-                <>
-                  <button onClick={() => cancelAppointment(item._id)}>
-                    <img
-                      className="w-10"
-                      src={assets.cancel_icon}
-                      alt="cancel_icon"
-                    />
-                  </button>
-                  <button onClick={() => completeAppointment(item._id)}>
-                    <img
-                      src={assets.tick_icon}
-                      alt="tick_icon"
-                      className="w-10"
-                    />
-                  </button>
-                </>
-              )}
+              {(() => {
+                if (item.cancelled) {
+                  return <p className="text-sm text-red-300">Cancelled</p>;
+                } else if (item.isCompleted) {
+                  return <p className="text-sm text-green-300">Completed</p>;
+                } else {
+                  return (
+                    <>
+                      <button onClick={() => cancelAppointment(item._id)}>
+                        <img
+                          className="w-10"
+                          src={assets.cancel_icon}
+                          alt="cancel_icon"
+                        />
+                      </button>
+                      <button onClick={() => completeAppointment(item._id)}>
+                        <img
+                          src={assets.tick_icon}
+                          alt="tick_icon"
+                          className="w-10"
+                        />
+                      </button>
+                    </>
+                  );
+                }
+              })()}
             </div>
           </div>
         ))}

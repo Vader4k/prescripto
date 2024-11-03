@@ -16,8 +16,8 @@ const Auth: React.FC = () => {
   const schema = formType === "register" ? RegistrationSchema : LoginSchema;
 
   const { baseUrl, setToken, token } = useUserContext();
-  const nagivate = useNavigate()
-  
+  const nagivate = useNavigate();
+
   const {
     register,
     handleSubmit,
@@ -32,54 +32,38 @@ const Auth: React.FC = () => {
     reset();
   }, [formType, reset]);
 
-  const onSubmit = async (data: FormData) => {
-    if (formType === "register") {
-      try {
-        const res = await axios.post(`${baseUrl}/api/user/register`, data);
-        if (res.data.success) {
-          setToken(res.data.token);
-          localStorage.setItem("token", res.data.token);
-          toast.success(res.data.message);
-          console.log(res.data + "success data");
-        } else {
-          toast.error(res.data.message);
-        }
-      } catch (error) {
-        if (axios.isAxiosError(error)) {
-          toast.error(error?.response?.data.message);
-        } else {
-          console.log("an unexpected error occured");
-          toast.error("something went wrong");
-        }
+  const handleAuth = async (url: string, data: FormData) => {
+    try {
+      const res = await axios.post(url, data);
+      if (res.data.success) {
+        setToken(res.data.token);
+        localStorage.setItem("token", res.data.token);
+        toast.success(res.data.message);
+      } else {
+        toast.error(res.data.message);
       }
-    } else {
-      try {
-        console.log("login form data", data);
-        const res = await axios.post(`${baseUrl}/api/user/login`, data);
-        if (res.data.success) {
-          setToken(res.data.token);
-          localStorage.setItem("token", res.data.token);
-          toast.success(res.data.message);
-          console.log(res.data + "testing success");
-        } else {
-          toast.error(res.data.message);
-        }
-      } catch (error) {
-        if (axios.isAxiosError(error)) {
-          toast.error(error?.response?.data.message);
-        }
-        console.log(error);
+    } catch (error) {
+      if (axios.isAxiosError(error)) {
+        toast.error(error?.response?.data.message);
+      } else {
         toast.error("something went wrong");
       }
     }
-    // Here you would typically make an API call to register or login the user
   };
 
-  useEffect(()=> {
-    if(token){
-      nagivate('/')
+  const onSubmit = async (data: FormData) => {
+    const url =
+      formType === "register"
+        ? `${baseUrl}/api/user/register`
+        : `${baseUrl}/api/user/login`;
+    await handleAuth(url, data);
+  };
+
+  useEffect(() => {
+    if (token) {
+      nagivate("/");
     }
-  },[token, nagivate])
+  }, [token, nagivate]);
 
   return (
     <section>
@@ -92,12 +76,12 @@ const Auth: React.FC = () => {
           appointment
         </p>
         <form
-          className="flex flex-col items-start gap-3"
+          className="flex flex-col gap-3 items-start"
           onSubmit={handleSubmit(onSubmit)}
           noValidate
         >
           {formType === "register" && (
-            <div className="flex flex-col w-full gap-3">
+            <div className="flex flex-col gap-3 w-full">
               <label className="text-sm text-gray-600" htmlFor="fullname">
                 Full Name
               </label>
@@ -115,7 +99,7 @@ const Auth: React.FC = () => {
               )}
             </div>
           )}
-          <div className="flex flex-col w-full gap-3">
+          <div className="flex flex-col gap-3 w-full">
             <label className="text-sm text-gray-600" htmlFor="email">
               Email
             </label>
@@ -132,7 +116,7 @@ const Auth: React.FC = () => {
               </p>
             )}
           </div>
-          <div className="flex flex-col w-full gap-3">
+          <div className="flex flex-col gap-3 w-full">
             <label className="text-sm text-gray-600" htmlFor="password">
               Password
             </label>
@@ -149,7 +133,7 @@ const Auth: React.FC = () => {
             )}
           </div>
           <button
-            className="w-full p-3 my-3 font-medium text-white rounded-lg bg-primary"
+            className="p-3 my-3 w-full font-medium text-white rounded-lg bg-primary"
             type="submit"
           >
             {formType === "register" ? "Create account" : "Login"}
@@ -166,7 +150,7 @@ const Auth: React.FC = () => {
               </button>
             </span>
           ) : (
-            <span className="text-sm text-center ">
+            <span className="text-sm text-center">
               Don't have an account?{" "}
               <button
                 className="underline text-primary"
