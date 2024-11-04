@@ -189,6 +189,7 @@ export const updateProfile = async (req, res) => {
 export const bookAppointment = async (req, res) => {
   try {
     const { id } = req.user; // Get the user's ID from the request
+    const { docId, slotDate, slotTime } = req.body;
     if (!id || !docId || !slotDate || !slotTime) {
       return res
         .status(400)

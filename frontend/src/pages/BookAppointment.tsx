@@ -81,20 +81,21 @@ const BookAppointment: React.FC = () => {
 
   const weekDays = getDatesOfWeek();
 
-  const createAppointment = async () => {
-    if (!token) {
-      toast.warn("Login to book appointment");
-      return navigate("/auth");
-    }
-    if (!selectedDay || !selectedTime) {
-      toast.warn("Please select a date and time");
-      return;
-    }
+  const createAppointment = async (docId:string) => {
     try {
+      console.log(docId)
+      if (!token) {
+        toast.warn("Login to book appointment");
+        return navigate("/auth");
+      }
+      if (!selectedDay || !selectedTime) {
+        toast.warn("Please select a date and time");
+        return;
+      }
       setLoading(true);
       const res = await axios.post(
         `${baseUrl}/api/user/book-appointment`,
-        { docId: id, slotDate: selectedDay, slotTime: selectedTime },
+        { docId, slotDate: selectedDay, slotTime: selectedTime },
         {
           headers: {
             token,
@@ -190,7 +191,7 @@ const BookAppointment: React.FC = () => {
             </div>
             <button
               disabled={loading}
-              onClick={createAppointment}
+              onClick={()=> createAppointment(docInfo._id)}
               className="px-8 py-3 text-sm text-white bg-primary rounded-[50px] my-5"
             >
               Book an appointment
