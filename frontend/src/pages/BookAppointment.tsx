@@ -124,7 +124,7 @@ const BookAppointment: React.FC = () => {
 
   return (
     <section>
-      <div className="flex items-start gap-6">
+      <div className="flex flex-col items-start gap-6 lg:flex-row">
         <div className="rounded-lg bg-primary">
           <img
             className="h-[280px] w-[300px]"
@@ -133,7 +133,7 @@ const BookAppointment: React.FC = () => {
           />
         </div>
         <div className="w-full">
-          <div className="w-full h-[280px] p-6 border rounded-lg ">
+          <div className="w-full min-h-[280px] p-6 border rounded-lg ">
             <div className="flex items-center gap-3">
               <h1 className="font-medium">{docInfo.name}</h1>
               <img src={assets.verified_icon} alt="verified_logo" />
@@ -158,7 +158,7 @@ const BookAppointment: React.FC = () => {
           </div>
           <div className="mt-5">
             <h2 className="py-4 font-medium">Booking slots</h2>
-            <div className="flex items-start gap-5">
+            <div className="flex flex-wrap items-start gap-5">
               {weekDays.map((dayInfo) => (
                 <button
                   disabled={loading}
