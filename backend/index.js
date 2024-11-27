@@ -13,9 +13,21 @@ const app = express()
 const port = process.env.PORT
 connectDB()
 connectCloudinary()
+
+const allowedOrigins = [
+    'https://prescripto-iota.vercel.app',
+    'http://localhost:5174'
+]
+
 const corsOption = {
-    origin: true,
-    Credentials: true
+    origin: (origin, callback) => {
+        if(allowedOrigins.indexOf(origin) !== -1 || !origin){
+            callback(null, true) // allows the request
+        } else {
+            callback(new Error('Not allowed by CORS'))
+        }
+    },
+    credentials: true
 }
 
 // middlewares for interracting to frontend
